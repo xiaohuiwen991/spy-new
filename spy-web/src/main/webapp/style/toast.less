@@ -1,0 +1,65 @@
+.toast{
+  display:none;
+  position:fixed;
+  top:50%;
+  left:50%;
+  width:240px;
+  line-height:1.5;
+  margin:-60px 0 0 -130px;
+  transform:translateY(-40px);
+  //transform:translate(-80px,-60px);
+  padding:30px 5px;
+  /*border:1px solid #cecede;*/
+  text-align:left;
+  background-color:#555;
+  color:#fff;
+  font-size:14px;
+  word-spacing: 2px;
+  letter-spacing: 1px;
+  word-break: break-all;
+  white-space: pre-wrap;
+  z-index: 99999999;
+  border-radius:5px;
+  background-color:rgba(88,88,88,0.86);
+  /*filter: alpha(opacity = 90);*/
+  /*filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#c5ddf1,endColorstr=#f5f5ff,GradientType=0);*/
+  /*background:#c5ddf1;*/
+  /*color:#225;*/
+  /*box-shadow: 3px 9px 6px #999;*/
+}
+
+/*QQ蓝风格*/
+.toast.qqblue{
+  color: #333;
+  background: #f1f1f1;
+  border-style: solid;
+  border-radius: 3px;
+  border-color: #1280CF #888 #888 #999;
+  border-color: steelblue;
+  border-width: 3px 1px 1px 1px;
+  border-width: 9px 2px 2px 2px;
+  box-shadow: 4px 8px 4px #aaa;
+  box-shadow: 0 0 32px #666;
+}
+.toast p{
+  padding-left:12px;
+  padding-right:12px;
+}
+.toast.ok p::before{
+  content: "✔ ";
+  font-family: "宋体",Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  color:lightgreen;
+}
+.toast.err p::before{
+  content: "ㄨ ";
+  font-weight: 600;
+  font-size: 16px;
+  color:red;
+}
+.toast.warn p::before{
+  content: "\f071 ";
+  font-family: FontAwesome;
+  font-size: 16px;
+  color: #FDD600;
+}

@@ -1,0 +1,122 @@
+<!--模版选择弹窗-->
+<div id="add-template-block" >
+    <div class="query-condition mt10 tac">
+        <form id="templateSql-form">
+            <div class="query-condition-p">
+                <span class="common-field w65">模版名：</span>
+                <input name="name"  class="common-input mr15"/>
+                <span class="common-field w65">语句类型：</span>
+                <dict dict-id="type-dict-query" dict-name="type" dict-type="select" dict-root="YJLXDM" class="dict"></dict>
+                <span class="common-field w75">模版语句：</span>
+                <input name="sql" class="common-input mr15 w240"/>
+            </div>
+            <div class="query-condition-p">
+                <span class="common-field w65">创建日期：</span><input type="text" name="createDateBegin" class="query-date ml5"/>~<input type="text" name="createDateEnd" class="query-date mr15"/>
+                <span class="common-field w65">创建人：</span>
+                <dict dict-type="select" id="createPid-select" dict-name="createPid"></dict>
+                <p class="query-reset">
+                    <b class="cm-query-btn mr15" id="query-btn-template"></b>
+                    <b class="cm-reset-btn" id="reset-btn-template"></b>
+                </p>
+            </div>
+        </form>
+    </div>
+    <div id="query-result-template">
+        <div class="new-color-bar">
+            <span class="title">模版语句列表（共找到<span class="total-count"></span>条数据）</span>
+        </div>
+        <table id="templateSql-templateSql-table" class="typical-tb">
+            <thead>
+            <th width="5%">序号</th>
+            <th width="11%">模版名</th>
+            <th width="7%">语句类型</th>
+            <th width="36%">模版语句</th>
+            <th width="14%">备注</th>
+            <th width="7%">创建人</th>
+            <th width="10%">创建时间</th>
+            <th width="10%">操作</th>
+            </thead>
+            <tbody tpsource="#templateSql-templateSql-list"></tbody>
+        </table>
+        <textarea id="copy-container"></textarea>
+        <div class="paging"></div>
+    </div>
+</div>
+<script type="text/template" id="templateSql-templateSql-list">
+    <tr class="{$nth2}">
+        <td>{rownum}</td>
+        <td>{name}</td>
+        <td>{typeZw}</td>
+        <td>{sql}</td>
+        <td>{description}</td>
+        <td>{createPidName}</td>
+        <td>{createDate}</td>
+        <td>
+            <b class="cm-add-btn cm-select-btn" param="{name}"></b>
+        </td>
+    </tr>
+</script>
+<script>
+    function intoTemplateSelect(selectWin,pageNO) {
+        top.registry.database.selectTemplateWin = selectWin;
+        top.registry.database.selectTemplatePageNO = pageNO;
+    }
+
+    // 在doc准备好后,写js逻辑
+    importing('datepicker','dict',function () {
+        var   templateSqlListAction = top.path+'/api/0/database/template_sql/list',
+                userInfoAction = top.path+'/api/0/database/template_sql/user_info',
+                pageData = [];
+
+        $('.dict').dict();
+        $('.query-date').datepicker();
+
+        //版本信息
+        $get(userInfoAction,{},function(res){
+            $('#createPid-select').dict(res.data).dictSelect(top.userName);
+            init();
+        });
+
+
+        function loadTemplateSqlList(currentPage) {
+            $('#query-result-template').pagingList({
+                action:templateSqlListAction,
+                currentPage:currentPage,
+                jsonObj:$('#templateSql-form').serializeObject(),
+                callback:pageBack
+            });
+        }
+
+        function pageBack(data) {
+            pageData = data;
+            $('#templateSql-templateSql-table').find('tbody').template(data, function(item,i){
+
+            });
+            //选择
+            $('.cm-select-btn').on('click',function () {
+                var data = pageData.where('o=>o.name=="'+$(this).attr('param')+'"')
+                if(top.registry.database.selectTemplatePageNO == 'database-develop-add') {
+                    $('#template-add-template').val(data.select('o=>o.sql'));
+                }
+                top.registry.database.selectTemplateWin.$close();
+            });
+        }
+        function init() {
+            //加载模版语句列表数据
+            loadTemplateSqlList();
+        }
+
+        //查询
+        $('#query-btn-template').on('click',function () {
+            loadTemplateSqlList();
+        });
+        //重置
+        $('#reset-btn-template').on('click',function () {
+            $('#templateSql-form')[0].reset();
+        });
+
+
+
+    });
+
+</script>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache name="code_common" updateCheck="false">
+
+    <diskStore path="${user.home}/.spy/spy-service/ehcache" />
+
+    <cache name="code_commonCache"
+           maxElementsInMemory="10000"
+           maxElementsOnDisk="0"
+           eternal="true"
+           overflowToDisk="true"
+           diskSpoolBufferSizeMB="20"
+           memoryStoreEvictionPolicy="LFU"
+           transactionalMode="off">
+    </cache>
+
+    <defaultCache
+            maxElementsInMemory="10000"
+            eternal="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="120"
+            overflowToDisk="true"
+            maxElementsOnDisk="10000000"
+            diskPersistent="false"
+            diskExpiryThreadIntervalSeconds="120"
+            memoryStoreEvictionPolicy="LRU"
+    />
+
+</ehcache>

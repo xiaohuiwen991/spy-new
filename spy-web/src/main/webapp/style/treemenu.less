@@ -1,0 +1,80 @@
+.toggle-tag{
+  position: fixed;
+  top: 40%;
+  left: -3px;
+  width: 13px;
+  height: 110px;
+  line-height: 110px;
+  font-size: 13px;
+  background-color: #A2A2A2;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 0 5px 5px 0;
+  -webkit-user-select: none;
+  /*animation:fadeInUp 0.5s 1.5s 3;*/
+  animation:fadeInUp 0.5s 0s 3;
+  z-index:9;
+}
+.tree-menu-accordion a {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tree-menu-accordion li.grade-1>a{
+  line-height: 32px;
+  padding-left:20px;
+  border-bottom: 1px solid lightgray;
+  background: linear-gradient(to bottom,#F8F8F8 0,#eeeeee 100%);
+}
+.tree-menu-accordion li.grade-1{
+  position:relative;
+  /*transition: 0.5s 0s ease;*/
+}
+.tree-menu-accordion li.grade-1.selected{
+  border-bottom: 1px solid lightgray;
+}
+.tree-menu-accordion li.grade-1.selected>a{
+  border-bottom: none;
+  background:-webkit-linear-gradient(left , #666,#666 60%, #bbb 85%,#fff);
+  color:gold;
+}
+.tree-menu-accordion li.grade-1>b{
+  position: absolute;
+  right:8px;
+  top:8px;
+  width:18px;
+  height:18px;
+  box-sizing: border-box;
+  border:1px solid transparent;
+  cursor:pointer;
+  opacity: 0.5;
+  background: url('../img/eui-gray/accordion_arrows.png') no-repeat -16px 0;
+}
+.tree-menu-accordion li.grade-1.expanded>b{
+  background: url('../img/eui-gray/accordion_arrows.png') no-repeat 0 0;
+}
+.tree-menu-accordion li.grade-1>b:hover{
+  opacity: 1;
+  border:1px solid #bbb;
+  border-radius:3px;
+}
+.tree-menu-accordion li.grade-2>a{
+  color:#555;
+  line-height: 26px;
+  padding-left:35px;
+  border-bottom: 1px solid #ddd;
+}
+.tree-menu-accordion li.grade-2.selected>a{
+  color:orange;
+}
+/*li.grade-1:last-child>a,*/
+.tree-menu-accordion li.grade-2:last-child>a{
+  border-bottom: none;
+}
+.tree-menu-accordion .grade-1 ul {
+  display: none;
+  overflow: hidden;
+}
+.tree-menu-accordion .grade-1 ul.hide{
+  display: none!important;
+}

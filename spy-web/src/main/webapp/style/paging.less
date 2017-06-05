@@ -1,0 +1,43 @@
+.paging{
+  padding:15px 15px 10px 0;
+  overflow:hidden;
+  text-align: center;
+}
+.paging.bottom{
+  padding-bottom:0;
+  position:absolute;
+  bottom:10px;
+  left: 0;
+}
+.paging div{
+  font-size: 12px;
+  display: inline-block;
+}
+.paging div a {
+  text-decoration: none;
+  border: solid 1px @paging-item-bdcolor;
+  color: @paging-item-color;
+}
+.paging div a,
+.paging div span {
+  display: block;
+  float: left;
+  padding: 0.25em 0.35em;/*0.3 0.5*/
+  margin-right: 5px;
+  margin-bottom: 5px;
+  min-width:1em;
+  text-align:center;
+}
+
+.paging div .current {
+  background: @paging-current-item-bgcolor;
+  color: @paging-current-item-color;
+  border: solid 1px @paging-item-bdcolor;
+}
+
+.paging div .current.prev,
+.paging div .current.next{
+  color:#ccc;
+  border-color:#c5c5c5;
+  background:#fff;
+}

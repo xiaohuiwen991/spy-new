@@ -1,0 +1,59 @@
+    @import "eui-override";
+    @import "toast";
+    @import "preview";
+    @import "common-ele";
+    @import "cm-btn";
+    @import "icon-btn";
+    @import "loading-mask";
+    @import "show-more";
+    @import "color-bar";
+
+    //字典
+    #dictFrame>div{
+        padding:10px 10px 5px 5px;
+    }
+    #dictFrame>div button {
+        margin-right: 5px;
+        padding: 1px 5px;
+        font-size: 13px;
+    }
+    .window.dict-window-wrap{
+        padding: 3px;
+        background:rgba(203, 216, 230, 0.97);
+    }
+    #current-position{
+        height: 32px;
+        line-height: 32px;
+        border-bottom: 0px dotted #abc5e0;
+        /*color: steelblue;*/
+        font-size: 13px;
+        color:#666;
+        padding-left: 5px;
+    }
+
+
+    //ui-btn
+    .ui-btn{
+        display: inline-block;
+        box-sizing: border-box;
+        padding: 0 10px;
+        line-height: 24px;
+        min-width: 50px;
+        font-size: 12px;
+        text-align: center;
+        border-radius: 3px;
+        border: 1px solid #bbb;
+        text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+        background: linear-gradient(to bottom,#ffffff 0,#e1e1e1 100%);
+        white-space: pre;
+        letter-spacing: 1px;
+        cursor: pointer;
+    }
+    .ui-btn:hover{
+        background: linear-gradient(to bottom,#f5f5f5 0,#dfdfdf 100%);
+        border: 1px solid #bbb;
+    }
+    .ui-btn-dark{
+        background-color: @mb-color;
+        color:@mf-color;
+    }

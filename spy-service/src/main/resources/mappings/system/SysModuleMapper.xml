@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hisign.spy.persist.mapper.system.SysModuleMapper" >
+    <select id="findAllModuleList"  resultType="com.hisign.spy.model.system.SysModule">
+       	SELECT
+			ID                    AS id,
+			MODULE_NO             AS moduleNo,
+			PARENT_ID             AS parentId,
+			TITLE                 AS title,
+			DESCRIPTION           AS description,
+			to_number(OPEN_FLAG)  AS openFlag,
+			CREATE_PID            AS createUser,
+			CREATE_DATE           AS createDatetime,
+			MODIFY_PID            AS updateUser,
+			MODIFY_DATE           AS updateDatetime,
+			URL                   AS url,
+			SORT                  AS sort,
+			root_id               AS rootId
+		FROM SYS_MODULE
+		ORDER BY to_number(SORT) nulls LAST
+    </select>
+
+    <select id="findSysModuleInfoById" parameterType="java.lang.String" resultType="com.hisign.spy.model.system.SysModule">
+        SELECT
+               M.ID 			                 AS moduleId,
+		 	   P.ID 			                 AS permissionId,
+		       R.ID 			                 AS resourceId,
+		       PR.ID 			                 AS permisResId,
+		 	   M.PARENT_ID                       AS parentId,
+		 	   M.DEFAULT_MODEL                   AS defaultInto,
+		       M.TITLE			                 AS title,
+		       M.DESCRIPTION 	                 AS description,
+		       P.DESCRIPTION	                 AS permissionDescription,
+		       M.MODULE_NO		                 AS moduleNo,
+		       to_number(M.OPEN_FLAG)            AS openFlag,
+		       R.RES_STRING 	                 AS operateNo,
+		       M.CREATE_DATE                     AS createDatetime,
+		       M.MODIFY_DATE                     AS updateDatetime,
+		       to_number(P.PERMISSION_FLAG)      AS permissionFlag,
+		       M.SORT                            AS sort,
+               M.URL                             AS url,
+			   m.root_id                         AS rootId
+		  FROM SYS_MODULE M, SYS_PERMISSION P, SYS_PERMIS_RES PR, SYS_RESOURCE R
+		 WHERE M.ID = P.MODULE_ID
+		   AND P.ID = PR.PERMISSION_ID
+		   AND R.ID = PR.RESOURCE_ID
+		   AND M.ID = #{id}
+    </select>
+
+    <delete id="deleteResource" parameterType="java.lang.String" >
+      DELETE FROM sys_resource r
+        WHERE r.id IN
+            (SELECT pr.resource_id
+            FROM sys_permis_res pr
+                WHERE pr.permission_id IN
+                    (SELECT p.id
+                    FROM sys_permission p
+                        WHERE p.module_id = #{id}))
+    </delete>
+
+    <delete id="deletePermisRes" parameterType="java.lang.String">
+        DELETE FROM sys_permis_res pr
+            WHERE pr.permission_id IN
+                (SELECT p.id FROM sys_permission p
+                    WHERE p.module_id = #{id})
+    </delete>
+
+    <insert id="insertModule" parameterType="com.hisign.spy.model.system.SysModule">
+        INSERT INTO sys_module
+        (
+            ID,
+            PARENT_ID,
+            TITLE,
+            DESCRIPTION,
+            OPEN_FLAG,
+            CREATE_PID,
+        <if test="defaultInto != null and defaultInto != ''">
+            DEFAULT_MODEL,
+        </if>
+            MODULE_NO,
+        <if test="url != null and url != ''">
+            URL,
+        </if>
+        <if test="sort != null and sort != ''">
+            SORT,
+        </if>
+            CREATE_DATE,
+            root_id
+        )
+        VALUES
+        (
+            #{moduleId},
+            #{parentId},
+            #{title},
+            #{description},
+            #{openFlag},
+            #{createUser},
+        <if test="defaultInto != null and defaultInto != ''">
+            #{defaultInto},
+        </if>
+            #{moduleNo},
+        <if test="url != null and url != ''">
+            #{url},
+        </if>
+        <if test="sort != null and sort != ''">
+            #{sort},
+        </if>
+            sysdate,
+            decode(#{parentId}, null, #{moduleId}, #{rootId})
+        )
+    </insert>
+
+    <insert id="insertPermission" parameterType="com.hisign.spy.model.system.SysModule">
+        INSERT INTO SYS_PERMISSION
+        (
+            ID,
+            MODULE_ID,
+            NAME,
+            DESCRIPTION,
+            OPEN_FLAG ,
+            CREATE_PID ,
+            CREATE_DATE ,
+            PERMISSION_FLAG
+        )
+        VALUES
+        (
+            #{id},
+            #{moduleId},
+            #{id},
+            #{permissionDescription},
+            #{openFlag},
+            #{createUser},
+            sysdate,
+            #{permissionFlag}
+        )
+    </insert>
+
+    <insert id="insertResource" parameterType="com.hisign.spy.model.system.SysModule">
+        INSERT INTO SYS_RESOURCE
+        (
+            ID,
+            NAME,
+            RES_TYPE,
+            RES_STRING,
+            DESCRIPTION,
+            CREATE_PID,
+            CREATE_DATE
+        )
+        VALUES
+        (
+            #{resourceId},
+            #{title},
+            #{resourceType},
+            #{resourceStr},
+            #{description},
+            #{createUser},
+            sysdate
+        )
+    </insert>
+
+    <insert id="insertPermisRes" parameterType="com.hisign.spy.model.system.SysModule">
+			INSERT INTO SYS_PERMIS_RES
+			(
+				ID,
+				PERMISSION_ID,
+				RESOURCE_ID,
+				CREATE_PID,
+				CREATE_DATE
+			)
+			VALUES
+			(
+				#{permisResId},
+				#{id},
+				#{resourceId},
+				#{createUser},
+				sysdate
+			)
+    </insert>
+
+    <delete id="deletePermission" parameterType="java.lang.String">
+        DELETE FROM sys_permission p WHERE p.module_id = #{id}
+    </delete>
+
+    <delete id="deleteModule" parameterType="java.lang.String">
+        DELETE FROM sys_module m WHERE m.id = #{id}
+    </delete>
+
+    <update id="upDateModuleInfo" parameterType="com.hisign.spy.model.system.SysModule">
+        UPDATE SYS_MODULE SET
+        <if test="title != null and title != ''">
+            TITLE=#{title},
+        </if>
+        <if test="description != null and description != ''">
+            DESCRIPTION=#{description},
+        </if>
+            OPEN_FLAG=#{openFlag},
+        <if test="defaultInto != null and defaultInto != ''">
+            DEFAULT_MODEL=#{defaultInto},
+        </if>
+        <if test="defaultInto == null or defaultInto == ''">
+            DEFAULT_MODEL='',
+        </if>
+        <if test="moduleNo != null and moduleNo != ''">
+            MODULE_NO=#{moduleNo},
+        </if>
+        <if test="updateUser != null and updateUser != ''">
+            MODIFY_PID=#{updateUser},
+        </if>
+        <if test="url != null and url != ''">
+            URL=#{url},
+        </if>
+        <if test="url == null or url == ''">
+            URL='',
+        </if>
+        <if test="sort != null and sort != ''">
+            SORT=#{sort},
+        </if>
+        <if test="sort == null or sort == ''">
+            SORT='',
+        </if>
+          MODIFY_DATE=sysdate
+        WHERE ID = #{moduleId}
+    </update>
+
+    <update id="updatePermission" parameterType="com.hisign.spy.model.system.SysModule">
+        UPDATE SYS_PERMISSION SET
+          NAME=id,
+        <if test="permissionDescription != null and permissionDescription != ''">
+          DESCRIPTION=#{permissionDescription},
+        </if>
+        <if test="openFlag != null and openFlag != ''">
+          OPEN_FLAG=#{openFlag},
+        </if>
+        <if test="updateUser != null and updateUser != ''">
+          MODIFY_PID=#{updateUser},
+        </if>
+          MODIFY_DATE=sysdate
+        WHERE ID = #{permissionId}
+    </update>
+
+    <update id="updatePermisRes" parameterType="com.hisign.spy.model.system.SysModule">
+        UPDATE SYS_PERMIS_RES SET
+        <if test="updateUser != null and updateUser != ''">
+          MODIFY_PID = #{updateUser},
+        </if>
+          MODIFY_DATE = sysdate
+        WHERE ID = #{permisResId}
+    </update>
+
+    <update id="updateResource" parameterType="com.hisign.spy.model.system.SysModule">
+        UPDATE SYS_RESOURCE SET
+        <if test="title != null and title != ''">
+          NAME=#{title},
+        </if>
+        <if test="description != null and description != ''">
+          DESCRIPTION=#{description},
+        </if>
+        <if test="resourceStr != null and resourceStr != ''">
+          RES_STRING=#{resourceStr},
+        </if>
+        <if test="updateUser != null and updateUser != ''">
+          MODIFY_PID=#{updateUser},
+        </if>
+          MODIFY_DATE=sysdate
+        WHERE ID = #{resourceId}
+    </update>
+
+    <delete id="deleteResourceForPer" parameterType="java.lang.String">
+        DELETE FROM sys_resource r
+            WHERE r.id IN
+            (SELECT pr.resource_id
+                FROM sys_permis_res pr
+                WHERE pr.permission_id IN
+            (SELECT p.id
+                FROM sys_permission p
+                WHERE p.module_id = #{id}
+                  AND p.permission_flag = '1'))
+    </delete>
+
+    <delete id="deletePermisResForPer" parameterType="java.lang.String">
+        DELETE FROM sys_permis_res pr
+            WHERE pr.permission_id IN
+                (SELECT p.id FROM sys_permission p
+            WHERE p.module_id = #{id}
+              AND p.permission_flag = '1')
+    </delete>
+
+    <delete id="deletePermissionForPer" parameterType="java.lang.String">
+        DELETE FROM sys_permission p WHERE p.module_id = #{id} AND p.permission_flag = '1'
+    </delete>
+
+    <select id="findSysModuleInfoByModuleId" parameterType="java.lang.String" resultType="com.hisign.spy.model.system.SysModule">
+		SELECT M.ID 			             AS moduleId,
+		       M.TITLE			             AS title,
+		       M.DESCRIPTION 	             AS description,
+		       M.MODULE_NO		             AS moduleNo,
+		       to_number(M.OPEN_FLAG)		 AS openFlag,
+		       M.CREATE_PID 	             AS createUser,
+		       M.CREATE_DATE                 AS createDatetime,
+		       M.MODIFY_DATE                 AS updateDatetime,
+		       M.MODIFY_PID                  AS updateUser,
+		       SORT                          AS sort,
+		       URL                           AS url
+		  FROM SYS_MODULE M
+		 WHERE M.ID = #{id}
+		   AND ROWNUM = 1
+    </select>
+
+    <select id="getGuid"  resultType="java.lang.String">
+        SELECT sys_guid() AS id FROM DUAL
+    </select>
+
+    <select id="findLogUserPower" parameterType="java.lang.String" resultType="com.hisign.spy.model.system.SysModule">
+        SELECT M.ID                         AS moduleId,
+               M.PARENT_ID                  AS parentId,
+               M.TITLE                      AS title,
+               M.SORT                       AS sort,
+               M.URL                        AS url,
+               M.DESCRIPTION                AS description,
+               P.DESCRIPTION                AS permissionDescription,
+               M.MODULE_NO                  AS moduleNo,
+               to_number(M.OPEN_FLAG)       AS openFlag,
+               R.RES_STRING                 AS pageNo,
+               M.DEFAULT_MODEL              AS defaultInto,
+               M.CREATE_DATE                AS createDatetime,
+               M.MODIFY_DATE                AS updateDatetime,
+               to_number(P.PERMISSION_FLAG) AS permissionFlag
+          FROM SYS_MODULE M, SYS_PERMISSION P, SYS_PERMIS_RES PR, SYS_RESOURCE R
+         WHERE M.ID = P.MODULE_ID
+           AND P.ID = PR.PERMISSION_ID
+           AND R.ID = PR.RESOURCE_ID
+           AND P.PERMISSION_FLAG = '0'
+           AND M.OPEN_FLAG = 1
+           AND R.RES_STRING IN (
+                SELECT
+                  RES_STRING
+                FROM SYS_RESOURCE
+                WHERE id IN
+                    (SELECT spr.resource_id FROM sys_permis_res spr WHERE spr.permission_id IN
+                    (SELECT srp.permission_id FROM sys_role_permis srp WHERE srp.role_id IN
+                    (SELECT sur.role_id FROM sys_user_role sur , sys_role sr WHERE  sur.ROLE_ID = sr.id AND sur.user_id  =
+                    (SELECT id FROM sys_user su WHERE su.username=#{userName} AND rownum=1 AND OPEN_FLAG = '1' ) AND sr.open_flag='1' ) ) ) )
+            ORDER BY to_number(SORT) nulls LAST
+    </select>
+
+    <select id="findLogUserPowerLimt" parameterType="java.lang.String" resultType="com.hisign.spy.model.system.SysModule">
+        SELECT
+            M.TITLE                      AS title,
+            M.SORT                       AS sort,
+            M.URL                        AS url,
+            M.DESCRIPTION                AS description,
+            P.DESCRIPTION                AS permissionDescription,
+            M.MODULE_NO                  AS moduleNo,
+            to_number(M.OPEN_FLAG)       AS openFlag,
+            R.RES_STRING                 AS operateNo,
+            M.CREATE_DATE                AS createDatetime,
+            M.MODIFY_DATE                AS updateDatetime,
+            to_number(P.PERMISSION_FLAG) AS permissionFlag
+        FROM SYS_MODULE M, SYS_PERMISSION P, SYS_PERMIS_RES PR, SYS_RESOURCE R
+        WHERE M.ID = P.MODULE_ID
+          AND P.ID = PR.PERMISSION_ID
+          AND R.ID = PR.RESOURCE_ID
+          AND P.PERMISSION_FLAG = '1'
+          AND R.RES_STRING IN (
+            SELECT
+              RES_STRING
+            FROM SYS_RESOURCE
+            WHERE id IN
+                (SELECT spr.resource_id FROM sys_permis_res spr WHERE spr.permission_id IN
+                (SELECT srp.permission_id FROM sys_role_permis srp WHERE srp.role_id IN
+                (SELECT sur.role_id FROM sys_user_role sur , sys_role sr WHERE  sur.ROLE_ID = sr.id AND sur.user_id  =
+                (SELECT id FROM sys_user su WHERE su.username=#{userName} AND rownum=1 AND OPEN_FLAG = '1') AND sr.open_flag='1' ) ) ) )
+            ORDER BY to_number(SORT) nulls LAST
+    </select>
+
+    <select id="findRoleList" parameterType="java.lang.String" resultType="java.util.HashMap">
+        SELECT
+            ROLE_NAME     AS ROLECN,
+            ROLE_NAME_EN  AS ROLEEN
+        FROM SYS_ROLE sr,SYS_User su,SYS_USER_ROLE sur
+        WHERE su.id = sur.User_Id
+        AND sr.id = sur.role_id
+        AND su.USERNAME = #{userName}
+        AND su.OPEN_FLAG = '1'
+        AND sr.OPEN_FLAG = '1'
+    </select>
+</mapper>

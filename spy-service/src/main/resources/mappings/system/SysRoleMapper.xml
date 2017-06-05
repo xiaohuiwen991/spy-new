@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hisign.spy.persist.mapper.system.SysRoleMapper" >
+    <select id="findSysRoleListByUserId"
+            parameterType="java.lang.String"
+            resultType="com.hisign.spy.model.system.SysRole" >
+        select
+            sr.ID as id,
+            sr.ROLE_NAME as roleName,
+            sr.DESCRIPTION as description,
+            sr.OPEN_FLAG as openFlag,
+            get_dictValue_by_dictKey('QYZTDM',sr.OPEN_FLAG) as openFlagZw
+        from 	SYS_ROLE sr, 	SYS_USER_ROLE sur
+        where 	sr.id = sur.role_id
+        and 	sur.USER_ID = #{value,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="findAllRole"
+            resultType="com.hisign.spy.model.system.SysRole">
+        select
+            ID as key,
+            ROLE_NAME as value
+        from SYS_ROLE
+        where 1=1
+        and OPEN_FLAG =  '1'
+    </select>
+
+    <select id="findSysRoleByFilter"
+            parameterType="com.hisign.spy.model.system.SysRole"
+            resultType="com.hisign.spy.model.system.SysRole">
+        select p.* from(
+        select
+            rownum,rownum as rn,a.* from (
+            select
+                ID as id,
+                ROLE_NAME as roleName,
+                DESCRIPTION as description,
+                OPEN_FLAG as openFlag,
+                ROLE_NAME_EN as roleNameEn,
+                get_dictValue_by_dictKey('QYZTDM',OPEN_FLAG) as openFlagZw
+            from SYS_ROLE
+        where 1=1
+        <if test="openFlag != null and openFlag != ''">
+            and OPEN_FLAG =  #{openFlag,jdbcType=VARCHAR}
+        </if>
+        <if test="roleName != null and roleName != ''">
+            and ROLE_NAME like '%' || #{roleName,jdbcType=VARCHAR} || '%' escape '\'
+        </if>
+        <if test="description != null and description != ''">
+            and DESCRIPTION like '%' || #{description,jdbcType=VARCHAR} || '%' escape '\'
+        </if>
+        <if test="orderByString != null and orderByString != ''">
+              order by ${orderByString}
+        </if>
+        <if test="orderByString == null or orderByString == ''">
+            order by CREATE_DATE desc nulls last
+        </if>
+        ) a
+        <if test="end != 0 and end !=null">
+        where rownum <![CDATA[<=]]> #{end,jdbcType=INTEGER}
+        </if>
+        ) p
+        <if test="begin != 0 and begin !=null">
+        where rn >= #{begin,jdbcType=INTEGER}
+        </if>
+    </select>
+
+    <select id="findSysRoleByFilterForCount"
+            parameterType="com.hisign.spy.model.system.SysRole"
+            resultType="java.lang.Integer">
+        select
+          count(1)
+        from SYS_ROLE
+        where 1=1
+        <if test="roleName != null and roleName != ''">
+            and ROLE_NAME like '%' || #{roleName,jdbcType=VARCHAR} || '%' escape '\'
+        </if>
+        <if test="description != null and description != ''">
+            and DESCRIPTION like '%' || #{description,jdbcType=VARCHAR} || '%' escape '\'
+        </if>
+
+    </select>
+
+    <delete id="deleteSysRoleById"
+            parameterType="java.lang.String">
+        delete from SYS_ROLE where ID=#{id,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteSysRolePermisByRoleId"
+            parameterType="java.util.HashMap">
+        delete from SYS_ROLE_PERMIS
+        where ROLE_ID=#{roleId,jdbcType=VARCHAR}
+        <if test="currentRolePermisIds != null and currentRolePermisIds != ''">
+            and PERMISSION_ID in (${currentRolePermisIds})
+        </if>
+    </delete>
+
+    <delete id="deleteSysUserRoleByRoleId"
+            parameterType="java.lang.String">
+        delete from SYS_USER_ROLE where ROLE_ID=#{id,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="findSysRoleList"
+            parameterType="com.hisign.spy.model.system.SysRole"
+            resultType="com.hisign.spy.model.system.SysRole">
+        select
+            rownum,
+            ID as id,
+            ROLE_NAME as roleName,
+            DESCRIPTION as description,
+            OPEN_FLAG as openFlag,
+            get_dictValue_by_dictKey('QYZTDM',OPEN_FLAG) as openFlagZw
+        from SYS_ROLE
+        where 1=1
+        <if test="roleName != null and roleName != ''">
+            and ROLE_NAME = #{roleName,jdbcType=VARCHAR}
+        </if>
+        <if test="id != null and id != ''">
+            and ID = #{id,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <insert id="insertSysRole"
+            parameterType="com.hisign.spy.model.system.SysRole">
+        insert into SYS_ROLE
+        (
+            ID,
+            ROLE_NAME,
+            DESCRIPTION,
+            OPEN_FLAG,
+            CREATE_PID,
+            CREATE_DATE,
+            MODIFY_PID,
+            MODIFY_DATE
+        ) values (
+            #{id,jdbcType=VARCHAR},
+            #{roleName,jdbcType=VARCHAR},
+            #{description,jdbcType=VARCHAR},
+            #{openFlag,jdbcType=VARCHAR},
+            #{user.trueName,jdbcType=VARCHAR},
+            sysdate,
+            #{user.trueName,jdbcType=VARCHAR},
+            sysdate
+        )
+    </insert>
+
+    <update id="updateSysRoleById"
+            parameterType="com.hisign.spy.model.system.SysRole">
+        UPDATE SYS_ROLE SET
+            ROLE_NAME = #{roleName,jdbcType=VARCHAR},
+            DESCRIPTION = #{description,jdbcType=VARCHAR},
+            OPEN_FLAG = #{openFlag,jdbcType=VARCHAR},
+            MODIFY_PID = #{user.trueName,jdbcType=VARCHAR},
+            MODIFY_DATE = sysdate
+        WHERE ID = #{roleId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findUserRoleByUserRoleId"
+            parameterType="com.hisign.spy.model.system.SysUserRole"
+            resultType="com.hisign.spy.model.system.SysUserRole">
+        <![CDATA[
+		select
+			ID as id,
+			USER_ID as userId,
+			ROLE_ID as roleId
+		from SYS_USER_ROLE
+		where ROLE_ID=#{roleId,jdbcType=VARCHAR} and  USER_ID=#{userId,jdbcType=VARCHAR}]]>
+    </select>
+
+    <insert id="insertSysUserRole"
+            parameterType="com.hisign.spy.model.system.SysUserRole">
+        insert into SYS_USER_ROLE
+        (
+            ID,
+            USER_ID,
+            ROLE_ID,
+            CREATE_PID,
+            CREATE_DATE
+        ) values (
+            #{id,jdbcType=VARCHAR},
+            #{userId,jdbcType=VARCHAR},
+            #{roleId,jdbcType=VARCHAR},
+            #{user.trueName,jdbcType=VARCHAR},
+            sysdate
+        )
+    </insert>
+
+    <delete id="deleteUserRoleByUserRoleId"
+            parameterType="java.util.HashMap">
+        delete from SYS_USER_ROLE where ROLE_ID=#{roleId} and USER_ID=#{userId}
+    </delete>
+
+    <select id="findALLSysModule"
+            resultType="com.hisign.spy.model.system.SysModule">
+		select
+			ID as id,
+			MODULE_NO as moduleNo,
+			PARENT_ID as parentId,
+			TITLE as title,
+			DESCRIPTION as description
+        from SYS_MODULE
+        where PARENT_ID is null
+        ORDER BY to_number(SORT) nulls LAST
+    </select>
+
+    <select id="findSysPermissionListByFilter"
+            parameterType="java.lang.String"
+            resultType="com.hisign.spy.model.system.SysPermission">
+        select
+            ID as id,
+            MODULE_ID as moduleId,
+            NAME as name,
+            OPERATION as operation,
+            DESCRIPTION as description,
+            OPEN_FLAG as openFlag
+        from SYS_PERMISSION
+        where 1=1
+        and MODULE_ID = #{moduleId}
+        and OPEN_FLAG='1'
+    </select>
+
+    <select id="findSysRolePermisListByFilter"
+            parameterType="com.hisign.spy.model.system.SysRolePermis"
+            resultType="com.hisign.spy.model.system.SysRolePermis">
+        select
+            ID as id,
+            ROLE_ID as roleId,
+            PERMISSION_ID as permissionId
+        from SYS_ROLE_PERMIS
+        where 1=1
+        <if test="roleId != null and roleId != ''">
+          and ROLE_ID = #{roleId}
+        </if>
+        <if test="permissionId != null and permissionId != ''">
+          and PERMISSION_ID = #{permissionId}
+        </if>
+    </select>
+
+    <select id="findSysModuleByParentId"
+            parameterType="java.lang.String"
+            resultType="com.hisign.spy.model.system.SysModule">
+        <![CDATA[
+		select
+            ID as id,
+            MODULE_NO as moduleNo,
+            PARENT_ID as parentId,
+            TITLE as title,
+            DESCRIPTION as description,
+            OPEN_FLAG as openFlag
+        from SYS_MODULE
+        where PARENT_ID=#{moduleId}
+        and OPEN_FLAG='1']]>
+    </select>
+
+    <insert id="insertSysRolePermis"
+            parameterType="com.hisign.spy.model.system.SysRolePermis">
+        insert into SYS_ROLE_PERMIS
+        (
+            ID,
+            ROLE_ID,
+            PERMISSION_ID,
+            CREATE_PID,
+            CREATE_DATE
+        ) values (
+            #{id},
+            #{roleId},
+            #{permissionId},
+            #{user.userName},
+            sysdate
+        )
+    </insert>
+
+</mapper>

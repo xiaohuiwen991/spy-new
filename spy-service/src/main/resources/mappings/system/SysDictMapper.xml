@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hisign.spy.persist.mapper.system.SysDictMapper" >
+
+
+  <select id="querySingleDictByRoot" parameterType="java.lang.String" resultType="com.hisign.spy.model.system.SysDict">
+      select
+        dict_key as key,
+        root_key as root,
+        dict_value1 as value
+      from sys_dict
+      where open_flag = '1'
+      and dict_level = '1'
+      and root_key = #{root}
+      order by dict_Key
+  </select>
+    
+    <select id="queryMultiDictByRoot" parameterType="java.lang.String" resultType="com.hisign.spy.model.system.SysDict">
+      select
+        dict_key as key,
+        root_key as root,
+        dict_value1 as value,
+        parent_key as parentKey
+      from sys_dict
+      where open_flag = '1'
+      and root_key = #{root}
+      and dict_key != root_key
+      order by dict_Key
+    </select>
+
+    <select id="queryDictByKey" parameterType="com.hisign.spy.model.system.SysDict" resultType="com.hisign.spy.model.system.SysDict">
+        select
+            dict_key as key,
+            root_key as root,
+            dict_value1 as value,
+            parent_key as parentKey
+        from sys_dict
+        where open_flag = '1'
+        and root_key = #{root}
+        and dict_key = #{key}
+        and rownum = 1
+    </select>
+
+    <select id="queryDictListByKeys" parameterType="com.hisign.spy.model.system.SysDict" resultType="com.hisign.spy.model.system.SysDict">
+        select
+            dict_key as key,
+            root_key as root,
+            dict_value1 as value,
+            parent_key as parentKey
+        from sys_dict
+        where open_flag = '1'
+        and root_key = #{root}
+        and dict_key in
+        <foreach collection="keys" item="key" index="index"  open="(" close=")" separator=",">
+            #{key}
+        </foreach>
+    </select>
+
+
+    <select id="queryDictListByCondition" parameterType="com.hisign.spy.model.system.SysDict" resultType="com.hisign.spy.model.system.SysDict">
+       select * from (
+        select
+        dict_key as key,
+        root_key as root,
+        dict_value1 as value,
+        parent_key as parentKey,
+        dict_py as py
+        from sys_dict
+        where open_flag = '1'
+        and root_key = #{root}
+        and dict_key != root_key
+        <if test="queryType != null and queryType == 1 ">
+            and dict_key like #{queryString}||'%'
+        </if>
+        <if test="queryType != null and queryType == 2 ">
+            and dict_py like '%'|| #{queryString}||'%'
+        </if>
+        <if test="queryType != null and queryType == 3 ">
+            and dict_value1 like '%'|| #{queryString}||'%'
+        </if>
+        order by dict_key
+        ) where rownum <![CDATA[<=]]> 100
+    </select>
+
+</mapper>

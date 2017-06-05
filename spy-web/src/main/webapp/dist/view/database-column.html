@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>字段信息查询</title>
+    <link rel="stylesheet" href="../../dist/css/base.css"/>
+    <link rel="stylesheet" href="../../dist/css/database.css"/>
+</head>
+<body>
+<div class="query-condition mt10 tac">
+    <form id="column-form">
+        <div class="query-condition-p">
+            <span class="common-field w65">表名：</span>
+            <input name="tableName"  class="common-input mr15"></select>
+            <span class="common-field w65">字段名：</span>
+            <input name="columnName" class="common-input mr15"></select>
+            <span class="common-field w65">描述：</span>
+            <input name="comments" class="common-input mr15"></select>
+            <p class="query-reset">
+                <b class="cm-query-btn mr15" id="query-btn"></b>
+                <b class="cm-reset-btn" id="reset-btn"></b>
+            </p>
+        </div>
+    </form>
+</div>
+<div id="query-result">
+    <div class="new-color-bar">
+        <span class="title">字段信息列表（共找到<span class="total-count"></span>条数据）</span>
+    </div>
+    <table id="column-column-table" class="typical-tb">
+        <thead>
+            <th>序号</th>
+            <th>表名</th>
+            <th>字段名</th>
+            <th>描述</th>
+            <th>数据类型</th>
+            <th>数据长度</th>
+            <th>是否可空</th>
+            <th>操作</th>
+        </thead>
+        <tbody tpsource="#column-column-list"></tbody>
+    </table>
+    <div class="paging"></div>
+</div>
+</body>
+<script type="text/template" id="column-column-list">
+    <tr class="{$nth2}">
+        <td>{rownum}</td>
+        <td>{tableName}</td>
+        <td>{columnName}</td>
+        <td>{comments}</td>
+        <td>{dataType}</td>
+        <td>{dataLength}</td>
+        <td>{nullableStr}</td>
+        <td>
+
+        </td>
+    </tr>
+</script>
+<script src="../../dist/js/base.js"></script>
+<script>
+    // 在doc准备好后,写js逻辑
+    importing(function () {
+        var   columnListAction = top.path+'/api/0/database/column/list',
+                pageData = [];
+
+        function loadColumnList(currentPage) {
+            $('#query-result').pagingList({
+                action:columnListAction,
+                currentPage:currentPage,
+                jsonObj:$('#column-form').serializeObject(),
+                callback:pageBack
+            });
+        }
+
+        function pageBack(data) {
+            pageData = data;
+            $('#column-column-table').find('tbody').template(data, function(item,i){
+                item.nullableStr = item.nullable == 'N' ? '否' : '是';
+            });
+        }
+        function init() {
+            //加载字段信息列表数据
+            loadColumnList();
+        }
+
+        init();
+
+        //查询
+        $('#query-btn').on('click',function () {
+            loadColumnList();
+        });
+        //重置
+        $('#reset-btn').on('click',function () {
+            $('#column-form')[0].reset();
+            $('#match-page').html('');
+        });
+
+    });
+
+</script>
+</html>

@@ -1,0 +1,40 @@
+.common-textarea{
+  width: 645px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding-left: 5px;
+  box-sizing: border-box;
+}
+.common-input,.common-select{
+  width: 260px;
+  height: 25px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  padding-left: 5px;
+  box-sizing: border-box;
+}
+.common-input.validatebox-invalid,.common-select.validatebox-invalid,.common-textarea.validatebox-invalid{
+  border: 1px solid @invalid-bdcolor!important;
+}
+tr:hover .common-input {
+  background: #ffef85;
+}
+.common-field{
+  display: inline-block;
+  width: 100px;
+  height: 24px;
+  line-height: 25px;
+  text-align: right;
+  font-weight: bold;
+  color: #666;
+  margin-right: 5px;
+}
+.cm-checkbox,[type="checkbox"]{
+  width: 15px;
+  height: 15px;
+}
+.cm-checkbox:checked,[type="checkbox"]:checked{
+  /*box-shadow: inset 0 0 2px 2px @ml-color3;*/
+  box-shadow: inset 0 0 2px 2px #925700;/*#865600;*/
+  -webkit-filter: brightness(1.6);/*利用亮度减色, 解决黑勾太黑*/
+}

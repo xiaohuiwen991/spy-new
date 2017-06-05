@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hisign.spy.persist.mapper.system.SysUserMapper" >
+  <resultMap id="BaseResultMap" type="com.hisign.spy.model.system.SysUser" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="username" property="userName" jdbcType="VARCHAR" />
+    <result column="password" property="userPwd" jdbcType="VARCHAR" />
+    <result column="true_name" property="trueName" jdbcType="VARCHAR" />
+    <result column="open_flag" property="openFlag" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, username, password, true_name, open_flag
+  </sql>
+  <sql id="ForCount" >
+    count(1)
+  </sql>
+  <sql id="select_By_Filter_For_Where" >
+    <where>
+		<if test="userName != null and userName != ''" >
+			and username = #{userName,jdbcType=VARCHAR}
+		</if>
+		<if test="userPwd != null and userPwd != ''" >
+	        and password = #{userPwd,jdbcType=VARCHAR}
+	    </if>
+  	</where>
+  </sql>
+
+  <select id="findSysUserListByFilter" parameterType="com.hisign.spy.model.system.SysUser" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sys_user
+    <include refid="select_By_Filter_For_Where" />
+  </select>
+
+  <select id="findSysUserListByFilterForCount" parameterType="com.hisign.spy.model.system.SysUser" resultType="java.lang.Integer">
+    select
+    <include refid="ForCount" />
+    from sys_user
+    <include refid="select_By_Filter_For_Where" />
+  </select>
+
+  <select id="findSysUserByUserName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+      <include refid="Base_Column_List" />
+    from sys_user
+    where username = #{userName,jdbcType=VARCHAR}
+  </select>
+
+  <select id="findSysUserListByUserFilter" parameterType="com.hisign.spy.model.system.SysUser" resultType="com.hisign.spy.model.system.SysUser">
+    select p.* from(
+    select
+      rownum,rownum as rn,a.* from (
+      select t.* from (
+        select
+          ID as id,
+          USERNAME as userName,
+          USER_LEVEL as userLevel,
+          PASSWORD as userPwd,
+          TRUE_NAME as trueName,
+          OPEN_FLAG as openFlag,
+          get_dictValue_by_dictKey('QYZTDM',OPEN_FLAG) as openFlagZw,
+          DEFAULT_MODULE as defaultModule,
+          REMARK as remark,
+          CREATE_PID as createUser,
+          CREATE_DATE as createDatetime,
+          MODIFY_PID as updateUser,
+          POLICE_ID as policeId,
+          CARD_ID as cardId,
+          USER_TEL as userTel,
+          USER_UNIT as userUnit,
+          get_dictValue_by_dictKey('GXSDM',USER_UNIT) as userUnitZh,
+          get_RoleName_by_id(id,'1') as roleNameString,
+          MODIFY_DATE as updateDatetime,
+          MODIFY_DATE
+        from SYS_USER
+        where 1= 1
+        <if test="userName != null and userName != ''">
+          and USERNAME like '%' || #{userName,jdbcType=VARCHAR} || '%' escape '\'
+        </if>
+        <if test="notContainUserName != null and notContainUserName != ''">
+          and USERNAME not in ${notContainUserName}
+        </if>
+        <if test="openFlag != null and openFlag != ''">
+          and OPEN_FLAG = #{openFlag,jdbcType=VARCHAR}
+        </if>
+        <if test="trueName != null and trueName != ''">
+          and TRUE_NAME like '%' || #{trueName,jdbcType=VARCHAR} || '%' escape '\'
+        </if>
+        <if test="userUnit != null and userUnit != ''">
+          and USER_UNIT like #{userUnit,jdbcType=VARCHAR}|| '%'
+        </if>) t
+      where 1=1
+      <if test="roleName != null and roleName != ''">
+        and roleNameString like '%' || #{roleName,jdbcType=VARCHAR} || '%'
+      </if>
+      <if test="orderByString != null and orderByString != ''">
+        order by ${orderByString}
+      </if>
+      ) a
+      <if test="end !=null and end !=0">
+        where rownum <![CDATA[<=]]> #{end,jdbcType=INTEGER}
+      </if>
+      ) p
+    <if test="begin !=null and begin !=0">
+      where rn >= #{begin,jdbcType=INTEGER}
+    </if>
+  </select>
+
+  <select id="findSysUserListByUserFilterForCount" parameterType="com.hisign.spy.model.system.SysUser" resultType="java.lang.Integer">
+    select
+      count(1)
+    from
+      ( select
+          get_RoleName_by_id(id,'1') as roleNameString
+        from SYS_USER
+        where 1=1
+        <if test="userName != null and userName != ''">
+          and USERNAME like '%' || #{userName,jdbcType=VARCHAR} || '%' escape '\'
+        </if>
+        <if test="openFlag != null and openFlag != ''">
+          and OPEN_FLAG = #{openFlag,jdbcType=VARCHAR}
+        </if>
+        <if test="trueName != null and trueName != ''">
+          and TRUE_NAME like '%' || #{trueName,jdbcType=VARCHAR} || '%' escape '\'
+        </if>
+        <if test="userUnit != null and userUnit != ''">
+          and USER_UNIT like #{userUnit,jdbcType=VARCHAR}|| '%'
+        </if>
+        ) t
+      where 1=1
+      <if test="roleName != null and roleName != ''">
+        and roleNameString like '%' || #{roleName,jdbcType=VARCHAR} || '%'
+      </if>
+  </select>
+
+  <delete id="deleteSysUserList"
+          parameterType="com.hisign.spy.model.system.SysUser">
+    delete from SYS_USER where ID= #{id,jdbcType=VARCHAR}
+  </delete>
+
+
+  <select id="findSysUserList" parameterType="com.hisign.spy.model.system.SysUser" resultType="com.hisign.spy.model.system.SysUser">
+    select
+      rownum,
+      ID as id,
+      USERNAME as userName,
+      USER_LEVEL as userLevel,
+      PASSWORD as userPwd,
+      TRUE_NAME as trueName,
+      OPEN_FLAG as openFlag,
+      get_dictValue_by_dictKey('QYZTDM',OPEN_FLAG) as openFlagZw,
+      DEFAULT_MODULE as defaultModule,
+      REMARK as remark,
+      CREATE_PID as createUser,
+      CREATE_DATE as createDatetime,
+      MODIFY_PID as updateUser,
+      POLICE_ID as policeId,
+      CARD_ID as cardId,
+      USER_TEL as userTel,
+      USER_UNIT as userUnit,
+      get_dictValue_by_dictKey('GXSDM',USER_UNIT) as userUnitZh,
+      MODIFY_DATE as modifyDatetime
+    from SYS_USER
+    where 1=1
+    <if test="id != null and id != ''">
+      and ID = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="userName != null and userName != ''">
+      and USERNAME = #{userName,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <delete id="deleteSysUserRoleByUserId"
+          parameterType="java.lang.String">
+    delete from SYS_USER_ROLE where USER_ID=#{value,jdbcType=VARCHAR}
+  </delete>
+
+  <select id="findSysUserRoleListByFilter" parameterType="com.hisign.spy.model.system.SysUser" resultType="com.hisign.spy.model.system.SysUser">
+    select
+      ID as id,
+      ROLE_ID as roleId,
+      CREATE_PID as createUser,
+      CREATE_DATE as createDatetime,
+      MODIFY_PID as modifyUser,
+      MODIFY_DATE as modifyDatetime
+    from SYS_USER_ROLE
+    where 1=1
+    <if test="id != null and id != ''">
+      and USER_ID = #{id,jdbcType=VARCHAR}
+    </if>
+    <if test="roleId != null and roleId != ''">
+      and ROLE_ID = #{roleId,jdbcType=VARCHAR}
+    </if>
+  </select>
+
+  <insert id="insertSysUserRole"
+          parameterType="com.hisign.spy.model.system.SysUserRole">
+    insert into SYS_USER_ROLE
+    (
+      ID,
+      USER_ID,
+      ROLE_ID,
+      CREATE_PID,
+      CREATE_DATE
+    ) values (
+      #{id,jdbcType=VARCHAR},
+      #{userId,jdbcType=VARCHAR},
+      #{roleId,jdbcType=VARCHAR},
+      #{user.trueName,jdbcType=VARCHAR},
+      sysdate
+    )
+  </insert>
+
+  <update id="updateSysUserById"
+          parameterType="com.hisign.spy.model.system.SysUser">
+    UPDATE SYS_USER SET
+    USERNAME = #{userName,jdbcType=VARCHAR},
+    <if test="newPassword != null and newPassword != ''">
+      PASSWORD = #{newPassword,jdbcType=VARCHAR},
+    </if>
+      TRUE_NAME = #{trueName,jdbcType=VARCHAR},
+      OPEN_FLAG = #{openFlag,jdbcType=VARCHAR},
+      USER_LEVEL = #{userLevel,jdbcType=VARCHAR},
+      REMARK = #{remark,jdbcType=VARCHAR},
+      MODIFY_PID = #{modifyUser,jdbcType=VARCHAR},
+      POLICE_ID = #{policeId,jdbcType=VARCHAR},
+      CARD_ID = #{cardId,jdbcType=VARCHAR},
+      USER_TEL = #{userTel,jdbcType=VARCHAR},
+      USER_UNIT = #{userUnit,jdbcType=VARCHAR},
+      MODIFY_DATE = sysdate
+      WHERE ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+
+  <insert id="insertSysUser"
+          parameterType="com.hisign.spy.model.system.SysUser">
+    insert into SYS_USER
+    (
+      ID,
+      USERNAME,
+      PASSWORD,
+      TRUE_NAME,
+      OPEN_FLAG,
+      DEFAULT_MODULE,
+      USER_LEVEL,
+      REMARK,
+      CREATE_PID,
+      CREATE_DATE,
+      MODIFY_PID,
+      MODIFY_DATE,
+      POLICE_ID,
+      CARD_ID,
+      USER_TEL,
+      USER_UNIT
+    ) values (
+      #{id,jdbcType=VARCHAR},
+      #{userName,jdbcType=VARCHAR},
+      #{userPwd,jdbcType=VARCHAR},
+      #{trueName,jdbcType=VARCHAR},
+      #{openFlag,jdbcType=VARCHAR},
+      #{defaultModule,jdbcType=VARCHAR},
+      #{userLevel,jdbcType=VARCHAR},
+      #{remark,jdbcType=VARCHAR},
+      #{createUser,jdbcType=VARCHAR},
+      sysdate,
+      #{modifyUser,jdbcType=VARCHAR},
+      sysdate,
+      #{policeId,jdbcType=VARCHAR},
+      #{cardId,jdbcType=VARCHAR},
+      #{userTel,jdbcType=VARCHAR},
+      #{userUnit,jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <select id="findUserListByRoleId" parameterType="java.lang.String" resultType="com.hisign.spy.model.system.SysUser">
+    select
+      su.ID as id,
+      su.USERNAME as userName,
+      su.PASSWORD as userPwd,
+      su.USER_LEVEL as userLevel,
+      su.TRUE_NAME as trueName,
+      su.OPEN_FLAG as openFlag,
+      su.DEFAULT_MODULE as defaultModule,
+      su.REMARK as remark,
+      su.CREATE_PID as createUser,
+      su.CREATE_DATE as createDatetime,
+      su.MODIFY_PID as modifyUser,
+      su.POLICE_ID as policeId,
+      su.CARD_ID as cardId,
+      su.USER_TEL as userTel,
+      su.USER_UNIT as userUnit,
+      su.MODIFY_DATE as modifyDatetime
+    from SYS_USER su,SYS_USER_ROLE ur
+    where 	su.ID=ur.user_id
+    and		ur.role_id = #{roleId,jdbcType=VARCHAR}
+  </select>
+
+
+  <select id="getRoleInfo" parameterType="java.lang.String" resultType="java.lang.String">
+    select
+      get_RoleName_by_id(ID,'2') as roleNameString
+    from SYS_USER
+    where 1= 1
+    and USERNAME = #{value,jdbcType=VARCHAR}
+    and OPEN_FLAG = '1'
+  </select>
+
+  <insert id="addUserToken"
+          parameterType="com.hisign.spy.model.system.SysUserToken">
+    insert into SYS_USER_TOKEN
+    (
+      ID,
+      USER_ID,
+      TOKEN
+    ) values (
+      sys_guid(),
+      #{userId,jdbcType=VARCHAR},
+      #{token,jdbcType=VARCHAR}
+    )
+  </insert>
+
+  <select id="getUserByToken" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+      <include refid="Base_Column_List" />
+    from SYS_USER
+    where 1= 1
+    and ID = (select USER_ID from SYS_USER_TOKEN where TOKEN = #{value,jdbcType=VARCHAR} and rownum = 1)
+    and OPEN_FLAG = '1'
+  </select>
+
+  <delete id="deleteUserToken"
+          parameterType="java.lang.String">
+    delete from SYS_USER_TOKEN where TOKEN = #{value,jdbcType=VARCHAR}
+  </delete>
+
+
+  <update id="updatePassword"
+          parameterType="com.hisign.spy.model.system.SysUser">
+    UPDATE SYS_USER SET
+      PASSWORD = #{newPassword,jdbcType=VARCHAR},
+      MODIFY_PID = #{userName,jdbcType=VARCHAR},
+      MODIFY_DATE = sysdate
+    WHERE ID = #{id, jdbcType=VARCHAR}
+  </update>
+</mapper>

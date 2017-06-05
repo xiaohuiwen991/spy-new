@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hisign.spy.persist.mapper.system.SysLogMapper" >
+    <select id="findLogUserInfo" parameterType="java.lang.String" resultType="com.hisign.spy.model.system.SysUser">
+      SELECT
+        TRUE_NAME    AS  trueName,
+        USER_UNIT    AS  userUnit
+      FROM sys_user
+      WHERE 1=1
+        AND USERNAME = #{userName}
+    </select>
+
+    <insert id="insertLogUserInfo" parameterType="com.hisign.spy.model.system.SysUser">
+        INSERT INTO sys_online_log
+        (
+          ID,
+          OPR_USER,
+          <if test="trueName != null and trueName != '' ">
+          OPR_USERNAME,
+          </if>
+          OPR_UNIT,
+          LOG_TIME,
+          DEL,
+          CREATE_UNIT,
+          CREATE_PID,
+          IP,
+          MODIFY_PID,
+          CREATE_DATE,
+          MODIFY_DATE
+        )VALUES (
+          sys_guid(),
+          #{userName},
+          <if test="trueName != null and trueName != '' ">
+          #{trueName},
+          </if>
+          <if test="userUnit != null and userUnit != '' ">
+          #{userUnit},
+          </if>
+          <if test="userUnit == null or userUnit == '' ">
+          '000000000000',
+          </if>
+          sysdate,
+          '0',
+          <if test="userUnit != null and userUnit != '' ">
+          #{userUnit},
+          </if>
+          <if test="userUnit == null or userUnit == '' ">
+          '000000000000',
+          </if>
+          #{userName},
+          #{ipAddress},
+          #{userName},
+          sysdate,
+          sysdate
+        )
+    </insert>
+
+    <update id="updateLogUserInfo" parameterType="com.hisign.spy.model.system.SysUser" >
+      UPDATE  sys_online_log SET
+        OFF_TIME  = sysdate,
+        MODIFY_PID = #{userName},
+        MODIFY_DATE = sysdate
+      WHERE 1=1
+        AND id = (
+          SELECT  t.id FROM (
+            SELECT  id FROM sys_online_log
+                WHERE  OPR_USER =  #{userName}
+                  ORDER BY CREATE_DATE DESC
+            ) t
+          WHERE rownum = 1
+        )
+    </update>
+
+  <insert id="insertOperLog"
+          parameterType="com.hisign.spy.model.system.OperationLog">
+    insert into SYS_LOG
+    (
+      ID,
+      OPR_USER,
+      OPR_USERNAME,
+      OPR_TIME,
+      OPR_DATA,
+      OPR_TYPE,
+      FUN_NO,
+      MODULE_NO,
+      OPR_UNIT,
+      CREATE_UNIT,
+      IP,
+      DEL,
+      MODIFY_DATE,
+      MODIFY_PID,
+      CREATE_DATE,
+      CREATE_PID
+    ) values (
+      sys_guid(),
+      #{sysUser.userName},
+      #{sysUser.trueName,jdbcType=VARCHAR},
+      sysdate,
+      #{operData},
+      #{operType},
+      #{moduleSon},
+      #{module},
+      <if test="sysUser.userUnit != null and sysUser.userUnit != ''">
+      #{sysUser.userUnit},
+      #{sysUser.userUnit},
+      </if>
+      <if test="sysUser.userUnit == null or sysUser.userUnit == ''">
+      '000000000000',
+      '000000000000',
+      </if>
+      #{ip},
+      '0',
+      sysdate,
+      #{sysUser.userName},
+      sysdate,
+      #{sysUser.userName}
+    )
+  </insert>
+</mapper>

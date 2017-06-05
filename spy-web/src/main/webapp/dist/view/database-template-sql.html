@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>模版语句管理</title>
+    <link rel="stylesheet" href="../../dist/css/base.css"/>
+    <link rel="stylesheet" href="../../dist/css/database.css"/>
+</head>
+<body>
+<div class="query-condition mt10 tac">
+    <form id="templateSql-form">
+        <div class="query-condition-p">
+            <span class="common-field w65">模版名：</span>
+            <input name="name"  class="common-input mr15"/>
+            <span class="common-field w65">语句类型：</span>
+            <dict dict-id="type-dict-query" dict-name="type" dict-type="select" dict-root="YJLXDM" class="dict"></dict>
+            <span class="common-field w75">模版语句：</span>
+            <input name="sql" class="common-input mr15 w265"/>
+            <p class="query-reset">
+                <b class="cm-query-btn mr15" id="query-btn"></b>
+                <b class="cm-reset-btn" id="reset-btn"></b>
+            </p>
+        </div>
+        <div class="query-condition-p">
+            <span class="common-field w65">创建日期：</span><input type="text" name="createDateBegin" class="query-date ml5"/>~<input type="text" name="createDateEnd" class="query-date mr15"/>
+            <span class="common-field w65">创建人：</span>
+            <dict dict-type="select" id="createPid" dict-name="createPid"></dict>
+        </div>
+    </form>
+</div>
+<div id="query-result">
+    <div class="new-color-bar">
+        <span class="title">模版语句列表（共找到<span class="total-count"></span>条数据）</span>
+        <div class="bar-btn-div">
+            <b class="cm-add-btn"></b>
+        </div>
+    </div>
+    <table id="templateSql-templateSql-table" class="typical-tb">
+        <thead>
+            <th width="5%">序号</th>
+            <th width="11%">模版名</th>
+            <th width="7%">语句类型</th>
+            <th width="36%">模版语句</th>
+            <th width="14%">备注</th>
+            <th width="7%">创建人</th>
+            <th width="10%">创建时间</th>
+            <th width="10%">操作</th>
+        </thead>
+        <tbody tpsource="#templateSql-templateSql-list"></tbody>
+    </table>
+    <textarea id="copy-container"></textarea>
+    <div class="paging"></div>
+</div>
+<!--新增弹窗-->
+<div id="add-templateSql-block" class="hide">
+    <form id="add-form">
+        <p class="mt30">
+            <span class="common-field w65"><span class="orangered">★ </span>模版名：</span>
+            <input name="name"  class="common-input validate mr15" data-options="required:true"></select>
+            <span class="common-field w65"><span class="orangered">★ </span>语句类型：</span>
+            <dict dict-id="type-dict-add" dict-name="type" dict-type="select" dict-root="YJLXDM" class="dict" empty="false"></dict>
+        </p>
+        <p class="mt20">
+            <span class="common-field fl"><span class="orangered">★ </span>模版语句：</span>
+            <textarea id="add-sql" name="sql" class="common-textarea sql-text validate" data-options="required:true,validType:'extLength[0,4000]'"></textarea>
+        </p>
+        <p class="mt20">
+            <span class="common-field fl">备注：</span>
+            <textarea id="add-description" name="description" class="common-textarea validate" data-options="validType:'extLength[0,4000]'"></textarea>
+        </p>
+        <p class="mt20 tcenter mb10">
+            <b id="add-save-btn" class="cm-save-btn mr15"></b>
+            <b id="add-close-btn" class="cm-cancel-btn"></b>
+        </p>
+    </form>
+</div>
+<!--修改弹窗-->
+<div id="edit-templateSql-block" class="hide">
+    <form id="edit-form">
+        <div id="edit-templateSql">
+            <p class="mt30">
+                <span class="common-field w65">模版名：</span>
+                <input id="edit-name" name="name"  class="common-input validate mr15" readonly></select>
+                <span class="common-field w65"><span class="orangered">★ </span>语句类型：</span>
+                <dict dict-id="type-dict-edit" dict-name="type" dict-type="select" dict-root="YJLXDM" class="dict" empty="false"></dict>
+            </p>
+            <p class="mt20">
+                <span class="common-field fl"><span class="orangered">★ </span>模版语句：</span>
+                <textarea id="edit-sql" name="sql" class="common-textarea sql-text validate" data-options="required:true,validType:'extLength[0,4000]'"></textarea>
+            </p>
+            <p class="mt20">
+                <span class="common-field fl">备注：</span>
+                <textarea id="edit-description" name="description" class="common-textarea validate" data-options="validType:'extLength[0,4000]'"></textarea>
+            </p>
+        </div>
+        <p class="mt20 tcenter mb10">
+            <b id="edit-save-btn" class="cm-save-btn mr15"></b>
+            <b id="edit-close-btn" class="cm-cancel-btn"></b>
+        </p>
+    </form>
+</div>
+<!--查看弹窗-->
+<div id="check-templateSql-block" class="hide">
+    <div id="check-templateSql">
+        <p class="mt30">
+            <span class="common-field w65">模版名：</span>
+            <input id="check-name" name="name"  class="common-input validate mr15" readonly></select>
+            <span class="common-field w65">语句类型：</span>
+            <input id="check-type" name="type"  class="common-input validate mr15" readonly></select>
+        </p>
+        <p class="mt20">
+            <span class="common-field fl">模版语句：</span>
+            <textarea id="check-sql" name="sql" class="common-textarea sql-text"  readonly></textarea>
+        </p>
+        <p class="mt20">
+            <span class="common-field fl">备注：</span>
+            <textarea id="check-description" name="description" class="common-textarea"  readonly></textarea>
+        </p>
+    </div>
+    <p class="mt20 tcenter mb10">
+        <b id="check-close-btn" class="cm-cancel-btn"></b>
+    </p>
+</div>
+</body>
+<script type="text/template" id="templateSql-templateSql-list">
+    <tr class="{$nth2}">
+        <td>{rownum}</td>
+        <td>{name}</td>
+        <td>{typeZw}</td>
+        <td>
+            <p class="brief-content">{sql}</p>
+            <a class="more-a" href="javascript:void(0);" moreId="{id}c">更多</a>
+            <a id="copy{rownum}" class="copy-a" href="javascript:void(0);" copyId="{name}">复制</a>
+        </td>
+        <td>{description}</td>
+        <td>{createPidName}</td>
+        <td>{createDate}</td>
+        <td>
+            <i class="icon-show-btn" title="查看" param="{name}"></i>
+            <i class="icon-edit-btn hidden{operateFlag}" title="修改" param="{name}" ></i>
+            <i class="icon-remove-btn  hidden{operateFlag}" title="删除" param="{name}"></i>
+        </td>
+    </tr>
+</script>
+<script src="../../dist/js/base.js"></script>
+<script>
+    // 在doc准备好后,写js逻辑
+    importing('datepicker','dict',function () {
+        var   templateSqlListAction = top.path+'/api/0/database/template_sql/list',
+                saveAddAction = top.path+'/api/0/database/template_sql/add',
+                saveEditAction = top.path+'/api/0/database/template_sql/edit',
+                deleteAction = top.path+'/api/0/database/template_sql/delete',
+                infoAction = top.path+'/api/0/database/template_sql/info',
+                userInfoAction = top.path+'/api/0/database/template_sql/user_info',
+                pageData = [];
+
+        $('.dict').dict();
+        $('.query-date').datepicker();
+
+        //版本信息
+        $get(userInfoAction,{},function(res){
+            $('#createPid').dict(res.data).dictSelect(top.userName);
+            init();
+        });
+
+        /**
+         * 最后一页删除操作后刷新页面
+         * @param pageNum 当前列表数量
+         * @param delNum 要删除的数量
+         * @returns {*}
+         */
+        function getCurrentPage2LastPageDel(pageNum, delNum){
+            var $paging = $('.paging');
+            var cpage = $paging.data('currentPage');
+            if($paging.find('span.current.next').length > 0){ //在最后一页进行删除操作时
+                if(pageNum ==  delNum){
+                    cpage = cpage - 1;
+                }
+            }
+            return cpage;
+        }
+
+        var closeWin = function(winId,resetForm) {
+            if(winId){
+                $(winId).$close();
+            }
+            if(resetForm) {
+                $(resetForm)[0].reset();
+            }
+            $('.validate').removeClass('validatebox-invalid');
+        }
+
+        function loadTemplateSqlList(currentPage) {
+            $('#query-result').pagingList({
+                action:templateSqlListAction,
+                currentPage:currentPage,
+                jsonObj:$('#templateSql-form').serializeObject(),
+                callback:pageBack
+            });
+        }
+
+        function pageBack(data) {
+            pageData = data;
+            $('#templateSql-templateSql-table').find('tbody').template(data, function(item,i){
+                item.operateFlag = item.createPid == top.currentUser.userName ? '1' : '';
+            });
+            //内容在4行内的不显示“更多”
+            isShowMore();
+            //修改
+            $('.icon-edit-btn').on('click',function () {
+                $open('#edit-templateSql-block',{title:'模版语句修改',width:820,onClose:function () {
+                    closeWin('','#edit-form');
+                }});
+                //初始化修改弹窗数据
+                initWinData.call(this, 'edit-templateSql', 'edit');
+            });
+            //复制查询参考语句
+            $('.copy-a').on('click',function () {
+                var referSqlArr = pageData.where('o=>o.name=="'+$(this).attr('copyId')+'"').select('o=>o.sql');
+                $('#copy-container').val(referSqlArr[0].replace(/<br>|<br\/>/gm,'')).select();
+                document.execCommand('copy');
+                toast('复制成功！');
+            });
+            //查看
+            $('.icon-show-btn').on('click',function () {
+                $open('#check-templateSql-block',{title:'模版语句查看',width:820});
+                //显示查看弹窗数据
+                initWinData.call(this, 'check-templateSql', 'check');
+            });
+            //删除
+            $('.icon-remove-btn').on('click',function () {
+                var name = $(this).attr('param');
+                $confirm('确认要删除这条模版语句吗？',function (del) {
+                    if(del){
+                        $post(deleteAction,{name:name}, function (res) {
+                            var msg = res.msg?res.msg:'删除成功！';
+                            toast(msg,600).ok();
+                            //加载模版语句列表数据
+                            loadTemplateSqlList(getCurrentPage2LastPageDel($('#templateSql-templateSql-table tbody tr').length, 1));
+                        });
+                    }
+                });
+
+            });
+
+
+        }
+        function init() {
+            //加载模版语句列表数据
+            loadTemplateSqlList();
+        }
+
+        function saveTemplateSql(action,params,winId,formId) {
+            //验证
+            $(winId+' .validate').validatebox();
+            if($('.validatebox-invalid').length>0){
+                return false;
+            }
+            //保存
+            $post(action,params,function (res) {
+                var msg = res.msg?res.msg:'保存成功！';
+                closeWin(winId,formId);
+                toast(msg,600).ok();
+                //加载模版语句列表数据
+                loadTemplateSqlList($('.paging').data('currentPage'));
+            },true);
+
+        }
+        function initWinData(divId, type) {
+            var that = $(this);
+            var name = that.attr('param');
+            $post(infoAction,{name:name},function(res) {
+                var data = res.data;
+                $('#'+type+"-name").val(data.name);
+                $('#'+type+"-sql").val(data.sql);
+                $('#'+type+"-description").val(data.description);
+                if(type == 'edit') {
+                    $('#type-dict-edit').dictSelect(data.type);
+                } else {
+                    $('#check-type').val(data.typeZw);
+                }
+            });
+        }
+
+        //查询
+        $('#query-btn').on('click',function () {
+            loadTemplateSqlList();
+        });
+        //重置
+        $('#reset-btn').on('click',function () {
+            $('#templateSql-form')[0].reset();
+            $('#match-page').html('');
+        });
+        //新增
+        $('.cm-add-btn').on('click',function () {
+            $open('#add-templateSql-block',{title:'模版语句新增',width:820,onClose:function () {
+                closeWin('','#add-form');
+            }});
+        });
+        //关闭新增弹窗
+        $('#add-close-btn').on('click',function () {
+            closeWin('#add-templateSql-block','#add-form');
+        });
+        //保存新增内容
+        $('#add-save-btn').on('click',function () {
+            saveTemplateSql(saveAddAction,$('#add-form').serializeObject(),'#add-templateSql-block','#add-form');
+        });
+
+        //关闭修改弹窗
+        $('#edit-close-btn').on('click',function () {
+            closeWin('#edit-templateSql-block','#edit-form');
+        });
+        //保存修改内容
+        $('#edit-save-btn').on('click',function () {
+            saveTemplateSql(saveEditAction,$('#edit-form').serializeObject(),'#edit-templateSql-block','#edit-form');
+        });
+        //关闭查看弹窗
+        $('#check-close-btn').on('click',function () {
+            $('#check-templateSql-block').$close();
+        });
+    });
+
+</script>
+</html>

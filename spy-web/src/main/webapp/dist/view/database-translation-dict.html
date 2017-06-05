@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>本地词库管理</title>
+    <link rel="stylesheet" href="../../dist/css/base.css"/>
+    <link rel="stylesheet" href="../../dist/css/database.css"/>
+</head>
+<body>
+<div class="query-condition mt10 tac">
+    <form id="translationDict-form">
+        <div class="query-condition-p">
+            <span class="common-field w65">字段名：</span>
+            <input name="originalText"  class="common-input mr15"/>
+            <span class="common-field w65">译名：</span>
+            <input name="translation" class="common-input mr15 w265"/>
+            <p class="query-reset">
+                <b class="cm-query-btn mr15" id="query-btn"></b>
+                <b class="cm-reset-btn" id="reset-btn"></b>
+            </p>
+        </div>
+        <div class="query-condition-p">
+            <span class="common-field w65">创建日期：</span><input type="text" name="createDateBegin" class="query-date ml5"/>~<input type="text" name="createDateEnd" class="query-date mr15"/>
+            <span class="common-field w65">创建人：</span>
+            <dict dict-type="select" id="createPid" dict-name="createPid"></dict>
+        </div>
+    </form>
+</div>
+<div id="query-result">
+    <div class="new-color-bar">
+        <span class="title">本地词库字段列表（共找到<span class="total-count"></span>条数据）</span>
+        <div class="bar-btn-div">
+            <b class="cm-add-btn"></b>
+        </div>
+    </div>
+    <table id="translationDict-translationDict-table" class="typical-tb">
+        <thead>
+        <th width="5%">序号</th>
+        <th width="15%">字段名</th>
+        <th width="15%">译名</th>
+        <th width="24%">描述</th>
+        <th width="13%">创建人</th>
+        <th width="18%">创建时间</th>
+        <th width="10%">操作</th>
+        </thead>
+        <tbody tpsource="#translationDict-translationDict-list"></tbody>
+    </table>
+    <textarea id="copy-container"></textarea>
+    <div class="paging"></div>
+</div>
+<!--新增弹窗-->
+<div id="add-translationDict-block" class="hide">
+    <form id="add-form">
+        <p class="mt30">
+            <span class="common-field w65"><span class="orangered">★ </span>字段名：</span>
+            <input name="originalText"  class="common-input validate mr15" data-options="required:true"/>
+            <span class="common-field w65"><span class="orangered">★ </span>译名：</span>
+            <input name="translation"  class="common-input validate mr15" data-options="required:true"/>
+        </p>
+        <p class="mt20">
+            <span class="common-field fl mr10">描述：</span>
+            <textarea id="add-description" name="description" class="common-textarea validate" data-options="validType:'extLength[0,4000]'"></textarea>
+        </p>
+        <p class="mt20 tcenter mb10">
+            <b id="add-save-btn" class="cm-save-btn mr15"></b>
+            <b id="add-close-btn" class="cm-cancel-btn"></b>
+        </p>
+    </form>
+</div>
+<!--修改弹窗-->
+<div id="edit-translationDict-block" class="hide">
+    <form id="edit-form">
+        <div id="edit-translationDict">
+            <p class="mt30">
+                <span class="common-field w65"><span class="orangered">★ </span>字段名：</span>
+                <input id="edit-originalText" name="originalText"  class="common-input validate mr15" readonly />
+                <span class="common-field w65"><span class="orangered">★ </span>译名：</span>
+                <input id="edit-translation" name="translation"  class="common-input validate mr15" />
+            </p>
+            <p class="mt20">
+            <span class="common-field fl mr10">描述：</span>
+            <textarea id="edit-description" name="description" class="common-textarea validate" data-options="validType:'extLength[0,4000]'"></textarea>
+            </p>
+        </div>
+        <p class="mt20 tcenter mb10">
+            <b id="edit-save-btn" class="cm-save-btn mr15"></b>
+            <b id="edit-close-btn" class="cm-cancel-btn"></b>
+        </p>
+    </form>
+</div>
+<!--查看弹窗-->
+<div id="check-translationDict-block" class="hide">
+    <div id="check-translationDict">
+        <p class="mt30">
+            <span class="common-field w65">字段名：</span>
+            <input id="check-originalText" name="originalText"  class="common-input validate mr15" readonly></select>
+            <span class="common-field w65">译名：</span>
+            <input id="check-translation" name="translation"  class="common-input validate mr15" readonly></select>
+        </p>
+        <p class="mt20">
+            <span class="common-field fl mr10">描述：</span>
+            <textarea id="check-description" name="description" class="common-textarea"  readonly></textarea>
+        </p>
+    </div>
+    <p class="mt20 tcenter mb10">
+        <b id="check-close-btn" class="cm-cancel-btn"></b>
+    </p>
+</div>
+</body>
+<script type="text/translationDict" id="translationDict-translationDict-list">
+    <tr class="{$nth2}">
+        <td>{rownum}</td>
+        <td>{originalText}</td>
+        <td>{translation}</td>
+        <td>{description}</td>
+        <td>{createPidName}</td>
+        <td>{createDate}</td>
+        <td>
+            <i class="icon-show-btn" title="查看" param="{originalText}"></i>
+            <i class="icon-edit-btn"  title="修改" param="{originalText}" ></i>
+            <i class="icon-remove-btn" title="删除" param="{originalText}"></i>
+        </td>
+    </tr>
+</script>
+<script src="../../dist/js/base.js"></script>
+<script>
+    // 在doc准备好后,写js逻辑
+    importing('datepicker','dict',function () {
+        var   translationDictListAction = top.path+'/api/0/database/translation_dict/list',
+                saveAddAction = top.path+'/api/0/database/translation_dict/add',
+                saveEditAction = top.path+'/api/0/database/translation_dict/edit',
+                deleteAction = top.path+'/api/0/database/translation_dict/delete',
+                infoAction = top.path+'/api/0/database/translation_dict/info',
+                userInfoAction = top.path+'/api/0/database/template_sql/user_info',
+                pageData = [];
+
+        $('.dict').dict();
+        $('.query-date').datepicker();
+
+        //版本信息
+        $get(userInfoAction,{},function(res){
+            $('#createPid').dict(res.data);
+            init();
+        });
+
+        /**
+         * 最后一页删除操作后刷新页面
+         * @param pageNum 当前列表数量
+         * @param delNum 要删除的数量
+         * @returns {*}
+         */
+        function getCurrentPage2LastPageDel(pageNum, delNum){
+            var $paging = $('.paging');
+            var cpage = $paging.data('currentPage');
+            if($paging.find('span.current.next').length > 0){ //在最后一页进行删除操作时
+                if(pageNum ==  delNum){
+                    cpage = cpage - 1;
+                }
+            }
+            return cpage;
+        }
+
+        var closeWin = function(winId,resetForm) {
+            if(winId){
+                $(winId).$close();
+            }
+            if(resetForm) {
+                $(resetForm)[0].reset();
+            }
+            $('.validate').removeClass('validatebox-invalid');
+        }
+
+        function loadTranslationDictList(currentPage) {
+            $('#query-result').pagingList({
+                action:translationDictListAction,
+                currentPage:currentPage,
+                jsonObj:$('#translationDict-form').serializeObject(),
+                callback:pageBack
+            });
+        }
+
+        function pageBack(data) {
+            pageData = data;
+            $('#translationDict-translationDict-table').find('tbody').template(data, function(item,i){
+                item.operateFlag = item.createPid == top.currentUser.userName ? '1' : '';
+            });
+            //内容在4行内的不显示“更多”
+            isShowMore();
+            //修改
+            $('.icon-edit-btn').on('click',function () {
+                $open('#edit-translationDict-block',{title:'翻译词典信息修改',width:820,onClose:function () {
+                    closeWin('','#edit-form');
+                }});
+                //初始化修改弹窗数据
+                initWinData.call(this, 'edit-translationDict', 'edit');
+            });
+            //查看
+            $('.icon-show-btn').on('click',function () {
+                $open('#check-translationDict-block',{title:'翻译词典查看',width:820});
+                //显示查看弹窗数据
+                initWinData.call(this, 'check-translationDict', 'check');
+            });
+            //删除
+            $('.icon-remove-btn').on('click',function () {
+                var name = $(this).attr('param');
+                $confirm('确认要删除该字段信息吗？',function (del) {
+                    if(del){
+                        $post(deleteAction,{originalText:name}, function (res) {
+                            var msg = res.msg?res.msg:'删除成功！';
+                            toast(msg,600).ok();
+                            //加载模版语句列表数据
+                            loadTranslationDictList(getCurrentPage2LastPageDel($('#translationDict-translationDict-table tbody tr').length, 1));
+                        });
+                    }
+                });
+
+            });
+
+
+        }
+        function init() {
+            //加载模版语句列表数据
+            loadTranslationDictList();
+        }
+
+        function saveTranslationDict(action,params,winId,formId) {
+            //验证
+            $(winId+' .validate').validatebox();
+            if($('.validatebox-invalid').length>0){
+                return false;
+            }
+            //保存
+            $post(action,params,function (res) {
+                var msg = res.msg?res.msg:'保存成功！';
+                closeWin(winId,formId);
+                toast(msg,600).ok();
+                //加载模版语句列表数据
+                loadTranslationDictList($('.paging').data('currentPage'));
+            },true);
+
+        }
+        function initWinData(divId, type) {
+            var that = $(this);
+            var name = that.attr('param');
+            $post(infoAction,{originalText:name},function(res) {
+                var data = res.data;
+                $('#'+type+"-originalText").val(data.originalText);
+                $('#'+type+"-translation").val(data.translation);
+                $('#'+type+"-description").val(data.description);
+            });
+        }
+
+        //查询
+        $('#query-btn').on('click',function () {
+            loadTranslationDictList();
+        });
+        //重置
+        $('#reset-btn').on('click',function () {
+            $('#translationDict-form')[0].reset();
+            $('#match-page').html('');
+        });
+        //新增
+        $('.cm-add-btn').on('click',function () {
+            $open('#add-translationDict-block',{title:'翻译词典新增',width:820,onClose:function () {
+                closeWin('','#add-form');
+            }});
+        });
+        //关闭新增弹窗
+        $('#add-close-btn').on('click',function () {
+            closeWin('#add-translationDict-block','#add-form');
+        });
+        //保存新增内容
+        $('#add-save-btn').on('click',function () {
+            saveTranslationDict(saveAddAction,$('#add-form').serializeObject(),'#add-translationDict-block','#add-form');
+        });
+
+        //关闭修改弹窗
+        $('#edit-close-btn').on('click',function () {
+            closeWin('#edit-translationDict-block','#edit-form');
+        });
+        //保存修改内容
+        $('#edit-save-btn').on('click',function () {
+            saveTranslationDict(saveEditAction,$('#edit-form').serializeObject(),'#edit-translationDict-block','#edit-form');
+        });
+        //关闭查看弹窗
+        $('#check-close-btn').on('click',function () {
+            $('#check-translationDict-block').$close();
+        });
+    });
+
+</script>
+</html>

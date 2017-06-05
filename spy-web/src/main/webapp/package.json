@@ -1,0 +1,19 @@
+{
+  "name": "nw-imms",
+  "version": "0.99",
+  "main": "dist/login.html",
+  "serverPath":"http://192.168.1.142:8000/code",
+  "window": {
+    "show": true,
+    "title":"开发代码管理系统",
+    "debug": 0,
+    "toolbar": 1,
+    "width": 1200,
+    "height": 720,
+    "min_width": 800,
+    "min_height": 480,
+    "resizable": false,
+    "position": "center",
+    "frame": true
+  }
+}

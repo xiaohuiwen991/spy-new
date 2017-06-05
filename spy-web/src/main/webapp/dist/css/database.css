@@ -1,0 +1,126 @@
+/*@group database-connection.html*/
+.icon-circle-blank {
+    color: #2a770b !important;
+    cursor: pointer;
+}
+/*@end database-connection.html**/
+
+/*@group database-template-sql.html*/
+.sql-text{
+    height: 147px;
+}
+.ml5{
+    margin-left: 5px;
+}
+.w265 {
+    width: 265px !important;
+}
+.copy-a{
+    margin-right: 5px;
+    float: right;
+}
+#copy-container{
+    position: absolute;
+    top: 0;
+    left: 3000px;
+}
+/*@end database-template-sql.html**/
+
+/*@group database-develop-sql.html*/
+#confirm-save-btn:after {
+  content: "是";
+}
+#confirm-close-btn:after {
+    content: "否";
+}
+#confirm-save-btn:before {
+    content: "";
+}
+#confirm-close-btn:before {
+    content: "";
+}
+.template-text{
+    height: 100px;
+    width: 600px;
+}
+.relative {
+    position: relative;
+}
+.add-template {
+    position: absolute;
+    margin-top: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+.w240 {
+    width: 240px !important;
+}
+.cm-select-btn:after {
+    content: " 选 择";
+}
+
+.add-object-mult-block{
+    display: inline-block;
+    max-width: 650px;
+}
+.add-object-mult-block .add-name {
+    margin-left: 0px;
+    border: 1px solid #ccc;
+    color: #ccc;
+}
+.add-object-mult-block .add-name {
+    display: inline-block;
+    text-align: center;
+    border-radius: 5px;
+    margin-left: 3px;
+    width: 36px;
+    padding: 5px;
+    margin-right: 5px;
+    cursor: pointer;
+}
+.ellipsis {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.add-object-mult-block .name {
+    display: inline-block;
+    text-align: center;
+    border-radius: 5px;
+    width: 134px;
+    height: 26px;
+    line-height: 26px;
+    margin-right: 5px;
+}
+.add-object-mult-block .name {
+    border: 1px solid orange;
+    box-shadow: inset 0 0 1px 1px rgb(250, 212, 138);
+}
+.add-object-mult-block .delete-object{
+    position: absolute;
+    top: -4px;
+    right: 1px;
+    color:red;
+}
+.add-object-mult-block .name-div {
+    display: inline-block;
+    position: relative;
+    margin-right: 10px;
+
+}
+th.text-center {
+    text-align: center;
+}
+.cm-ok-btn {
+    background: #61aa47;
+    border-color: #61aa47;
+    color: #fff;
+    text-shadow: 0 1px 1px rgba(5, 5, 5, 0.9);
+}
+/*@end database-develop-sql.html**/
+
+/*@group database-translation-dict.html*/
+.mr10 {
+    margin-right: 10px;
+}
+/*@end database-translation-dict.html**/

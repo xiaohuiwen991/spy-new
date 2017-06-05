@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hisign.spy.persist.mapper.system.SysLoginLogMapper" >
+    <select id="findSysLoginLogList" parameterType="com.hisign.spy.model.system.SysLoginLog" resultType="com.hisign.spy.model.system.SysLoginLog">
+        select * from (
+            select t.*,rownum as rn
+                from (
+                    select
+                        ID as id,
+                        OPR_USER as oprUser,
+                        OPR_USERNAME as oprUserName,
+                        OPR_UNIT as oprUnit,
+                        (select t.dict_value1 from sys_dict t
+                           where dict_key=OPR_UNIT and root_key='GXSDM') as oprUnitCh,
+                        to_char(LOG_TIME,'yyyy-mm-dd hh24:mi:ss') as logTime,
+                        to_char(OFF_TIME,'yyyy-mm-dd hh24:mi:ss') as offTime,
+                        CREATE_UNIT as createUnit,
+                        to_char(CREATE_DATE,'yyyy-mm-dd hh24:mi:ss') as createDate,
+                        CREATE_PID as createPid,
+                        to_char(MODIFY_DATE, 'yyyy-mm-dd hh24:mi:ss') as modifyDate,
+                        MODIFY_PID as modifyPid,
+                        IP as ip,
+                        REV1 as rev1,
+                        REV2 as rev2,
+                        REV3 as rev3,
+                        REV4 as rev4
+                    from sys_online_log
+                    where 1=1
+        <if test="logDateBegin!=null and logDateBegin!=''">
+            and LOG_TIME >= to_date(#{logDateBegin},'yyyy-mm-dd')
+        </if>
+        <if test="logDateEnd!=null and logDateEnd!=''">
+            and LOG_TIME <![CDATA[<]]> to_date(#{logDateEnd},'yyyy-mm-dd')+1
+        </if>
+        <if test="oprUser!=null and oprUser!=''">
+            and opr_user LIKE '%'||#{oprUser}||'%' ESCAPE '\'
+        </if>
+        <if test="orderByString!=null and orderByString!=''">
+            ${orderByString}
+        </if>
+                  ) t
+                  where  rownum <![CDATA[<=]]> #{end}) p
+            where p.rn <![CDATA[>=]]>#{begin}
+    </select>
+
+    <select id="findSysLoginLogListForCount" parameterType="com.hisign.spy.model.system.SysLoginLog" resultType="java.lang.Integer">
+        select
+        count(1)
+        from sys_online_log
+        where 1=1
+        <if test="logDateBegin!=null and logDateBegin!=''">
+            and log_time >= to_date(#{logDateBegin},'yyyy-mm-dd')
+        </if>
+        <if test="logDateEnd!=null and logDateEnd!=''">
+            and log_time <![CDATA[<]]> to_date(#{logDateEnd},'yyyy-mm-dd')+1
+        </if>
+        <if test="oprUser!=null and oprUser!=''">
+            and opr_user LIKE '%'||#{oprUser}||'%' ESCAPE '\'
+        </if>
+        <if test="orderByString!=null and orderByString!=''">
+            ${orderByString}
+        </if>
+    </select>
+</mapper>

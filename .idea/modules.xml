@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/spy-all.iml" filepath="$PROJECT_DIR$/spy-all.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spy-api/spy-api.iml" filepath="$PROJECT_DIR$/spy-api/spy-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spy-common/spy-common.iml" filepath="$PROJECT_DIR$/spy-common/spy-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spy-service/spy-service.iml" filepath="$PROJECT_DIR$/spy-service/spy-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spy-web/spy-web.iml" filepath="$PROJECT_DIR$/spy-web/spy-web.iml" />
+    </modules>
+  </component>
+</project>

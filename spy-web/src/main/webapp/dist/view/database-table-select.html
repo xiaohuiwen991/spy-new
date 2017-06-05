@@ -1,0 +1,166 @@
+<!--模版选择弹窗-->
+<div id="add-table-block" >
+    <div class="query-condition mt10 tac">
+        <form id="tables-form">
+            <div class="query-condition-p">
+                <span class="common-field w65">表名：</span>
+                <input name="tableName"  class="common-input mr15"></select>
+                <span class="common-field w65">描述：</span>
+                <input name="comments" class="common-input mr15"></select>
+                <p class="query-reset">
+                    <b class="cm-query-btn mr15" id="query-btn-table"></b>
+                    <b class="cm-reset-btn" id="reset-btn-table"></b>
+                </p>
+            </div>
+        </form>
+    </div>
+    <div id="query-result-table">
+        <div class="new-color-bar">
+            <span class="title">用户表信息列表（共找到<span class="total-count"></span>条数据）</span>
+            <div class="bar-btn-div">
+                <b class="table-ok cm-ok-btn open-no-fix-btn"></b>
+            </div>
+        </div>
+        <table id="tables-tables-table" class="typical-tb">
+            <thead>
+                <th class="text-center"><input type="checkbox" id="tableCheckAll"/></th>
+                <th class="text-center">序号</th>
+                <th class="text-center">表名</th>
+                <th class="text-center">描述</th>
+            </thead>
+            <tbody tpsource="#tables-tables-list"></tbody>
+        </table>
+        <div class="paging"></div>
+    </div>
+</div>
+<script type="text/template" id="tables-tables-list">
+    <tr class="{$nth2}">
+        <td><input type="checkbox" {_checked} class="tableCheckBox"  rownum="{rownum}"/></td>
+        <td>{rownum}</td>
+        <td>{tableName}</td>
+        <td>{comments}</td>
+    </tr>
+</script>
+<script>
+    function intoTableSelectMult(selectWin,pageNO) {
+        top.registry.database.selectTableWin = selectWin;
+        top.registry.database.selectTablePageNO = pageNO;
+    }
+
+    // 在doc准备好后,写js逻辑
+    importing(function () {
+        var   tableSqlListAction = top.path+'/api/0/database/column/table_list',
+                pageData = [];
+
+        init();
+
+        function loadTableSqlList(currentPage) {
+            top.registry.database.checkTables = [];
+            $('#query-result-table').pagingList({
+                action:tableSqlListAction,
+                currentPage:currentPage,
+                jsonObj:$('#tables-form').serializeObject(),
+                callback:pageBack
+            });
+        }
+
+        $('.table-ok').click(function(){
+            if(top.registry.database.selectTablePageNO == 'database-develop-add') {
+                developSqlAddTable('add');
+            }
+        });
+
+        //判断该页面是否进行全选
+        function judgeCheckAll(){
+            var checkAll = true;
+            var arryCheck = $(".tableCheckBox");
+            if(arryCheck.length == 0) {
+                checkAll = false;
+            }else {
+                $(arryCheck).each(function () {
+                    if (!this.checked) {
+                        checkAll = false;
+                    }
+                });
+            }
+            $('#tableCheckAll').prop('checked',checkAll);
+        }
+
+        function pageBack(data) {
+            pageData = data;
+            $('#tables-tables-table').find('tbody').template(data, function(item,i){
+                var checkedTablesLen,
+                        j,
+                        checkedJ;
+                item._checked = null;
+                for(j=0,checkedTablesLen = top.registry.database.checkTables.length;j<checkedTablesLen;j++){
+                    checkedJ = top.registry.database.checkTables[j];
+                    if(checkedJ.rownum == item.rownum) {
+                        item._checked = 'checked';
+                        return false;
+                    }
+                }
+            });
+            judgeCheckAll();
+            $('.tableCheckBox').off('click').on('click',function(){
+                var i = $(this).index('.tableCheckBox');
+                var rownum=+(this.getAttribute('rownum'));
+                if(this.checked){
+                    top.registry.database.checkTables.push({rownum:rownum,data:data[i]});
+                }else{
+                    if(top.registry.database.checkTables && top.registry.database.checkTables.length > 0){
+                        if(top.registry.database.checkTables.where('o=>o.rownum == "1"')){
+                            var t_index = $.inArray(top.registry.database.checkTables.where('o=>o.rownum == "'+rownum+'"')[0], top.registry.database.checkTables);
+                            top.registry.database.checkTables.splice(t_index, 1);
+                        }
+                    }
+                }
+                judgeCheckAll();
+            });
+//            //选择
+//            $('.cm-select-btn').on('click',function () {
+//                var data = pageData.where('o=>o.name=="'+$(this).attr('param')+'"')
+//                if(top.registry.database.selectTablePageNO == 'database-develop-add') {
+//                    $('#table-add-table').val(data.select('o=>o.sql'));
+//                }
+//                top.registry.database.selectTableWin.$close();
+//            });
+
+            //全选操作
+            $('#tableCheckAll').off('click').on('click',function(){
+                $(".tableCheckBox").prop('checked',$(this).prop('checked'));
+                var arryCheck = $(".tableCheckBox");
+                var t_rownum = '';
+                $(arryCheck).each(function(i){
+                    t_rownum = this.getAttribute('rownum');
+                    if(this.checked) {
+                        top.registry.database.checkTables.push({rownum: t_rownum, data: data[i]});
+                    }else{
+                        var t_index = $.inArray(top.registry.database.checkTables.where('o=>o.rownum == "'+t_rownum+'"')[0], top.registry.database.checkTables);
+                        if(t_index > -1){
+                            top.registry.database.checkTables.splice(t_index, 1);
+                        }
+                    }
+                });
+            });
+        }
+
+        function init() {
+            //加载模版语句列表数据
+            loadTableSqlList();
+        }
+
+        //查询
+        $('#query-btn-table').on('click',function () {
+            loadTableSqlList();
+        });
+        //重置
+        $('#reset-btn-table').on('click',function () {
+            $('#tables-form')[0].reset();
+        });
+
+
+
+    });
+
+</script>

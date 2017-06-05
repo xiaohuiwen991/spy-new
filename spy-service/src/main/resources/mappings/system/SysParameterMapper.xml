@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hisign.spy.persist.mapper.system.SysParameterMapper" >
+	<select id="findSysConfigList"  resultType="com.hisign.spy.model.system.SysParam">
+			SELECT t.*,rownum FROM (
+				SELECT
+					ID 			 	AS id,
+					CHINESE_NAME 	AS chineseName,
+					ENGLISH_NAME 	AS englishName,
+					VALUE 			AS value,
+					DEFAULT_VALUE 	AS defaultValue,
+					REMARK 			AS remark,
+					CREATE_PID 	    AS createUser,
+					CREATE_DATE     AS createDatetime,
+					MODIFY_PID 	    AS updateUser,
+					MODIFY_DATE     AS updateDatetime
+				FROM SYS_PARAMETER
+				WHERE 1=1 ORDER BY createDatetime DESC) t
+	</select>
+
+	<insert id="insertSysParameter" parameterType="com.hisign.spy.model.system.SysParam" >
+		INSERT INTO SYS_PARAMETER(
+			ID,
+			CHINESE_NAME,
+			ENGLISH_NAME,
+			VALUE,
+			DEFAULT_VALUE,
+			REMARK,
+			CREATE_PID,
+			CREATE_DATE
+		)VALUES(
+			sys_guid(),
+			#{chineseName},
+			#{englishName},
+			#{value},
+			#{defaultValue},
+			#{remark},
+			#{createUser},
+			sysdate
+		)
+	</insert>
+
+	<update id="updateSysParameter" parameterType="com.hisign.spy.model.system.SysParam" >
+		UPDATE SYS_PARAMETER SET
+			VALUE =  #{value,jdbcType=VARCHAR},
+		<if test="updateUser != null and updateUser != ''">
+			MODIFY_PID = #{updateUser},
+		</if>
+			MODIFY_DATE = sysdate
+		WHERE ENGLISH_NAME = #{name}
+	</update>
+
+	<select id="checkSysParameter"  parameterType="java.lang.String" resultType="java.lang.Integer">
+		SELECT
+			count(1)
+		FROM SYS_PARAMETER
+		WHERE 1=1 AND ENGLISH_NAME = #{englishName}
+	</select>
+
+</mapper>

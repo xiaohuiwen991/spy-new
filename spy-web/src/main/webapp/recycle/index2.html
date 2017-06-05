@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+<!--<%@ page language="java" contentType="text/html; charset=utf-8" %>-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>::IMMS:: </title>
+    <link rel="shortcut icon" href="dist/img/favicon.ico?version=1.0" type="image/x-icon" />
+    <link rel="stylesheet" href="dist/css/base.css?version=1.0">
+    <script>
+        window.version='1.0';
+        window.path=location.href.replace(/index2?\.(html|jsp)/,'').replace(/view\/.*/,'');
+        window.molDatas=[
+            {
+                name:'首页',
+                id:'fst-page',
+                direct:'fst-page.html',
+                items:null
+            },
+            {
+                name:'信息管理',
+                id:'info-mng',
+                items:[
+                    {name:'实施项目管理',id:'',direct:'info-mng/info-mng-ssxmgl.html',items:null},
+                    {name:'存储过程管理',id:'',direct:null,items:[
+                        {name:'项目存储过程',id:'',direct:'info-mng-xmcc.html'},
+                        {name:'工作存储过程',id:'',direct:'info-mng-gzcc.html'}
+                    ]},
+                    {name:'模块语句管理',id:'',direct:'info-mng/info-mng-mkyj.html',items:null},
+                    {name:'问题共享管理',id:'',direct:'info-mng-wtgx.html',items:null}
+                ]
+            },
+            {
+                name:'项目监控',
+                id:'prj-watch',
+                items:[
+                    {name:'数据实时统计',id:'prj-watch-sjsstj',direct:'prj-watch-sjsstj.html',items:null},
+                    {name:'数据实时监控',id:'prj-watch-sjssjk',direct:'prj-watch-sjssjk.html',items:null},
+                    {name:'应用服务监控',id:'prj-watch-yyfwjk',direct:'prj-watch-yyfwjk.html',items:null}
+                ]
+            },
+            {
+                name:'用户反馈',
+                id:'feed-back',
+                items:[
+                    {name:'用户反馈管理',id:'feed-back-mng',direct:'feed-back-mng.html',items:null},
+                    {name:'培训情况维护',id:'feed-back-pxqkwh',direct:'feed-back-pxqkwh.html',items:null},
+                    {name:'案例情况维护',id:'feed-back-alqkwh',direct:'feed-back-alqkwh.html',items:null}
+                ]
+            },
+            {
+                name:'统计报表',
+                id:'reports',
+                items:[
+                    {name:'系统使用情况统计',id:'',direct:'reports-sys-use.html',items:null}
+                ]
+            },
+            {
+                name:'管理维护',
+                id:'sys',
+                items:[
+                    {name:'登录用户管理',id:'',direct:'sys-dlyhgl.html',items:null},
+                    {name:'系统角色管理',id:'',direct:'sys-xtjsgl.html',items:null},
+                    {name:'系统模块管理',id:'',direct:'sys-xtmkgl.html',items:null},
+                    {name:'统计报表管理',id:'',direct:'sys-tjbbgl.html',items:null},
+                    {name:'统计报表维护',id:'',direct:'sys-tjbbwh.html',items:null},
+                    {name:'字典控件',id:'',direct:'sys-dict.html',items:null}
+                ]
+            }
+
+        ];
+    </script>
+    <link rel="stylesheet" href="dist/css/index.css">
+</head>
+<body>
+    <header>
+    <canvas id="bubbleCanvas" width="320" height="150"></canvas>
+    <h1 id="head-txt">研发代码管理系统</h1>
+    <div id="root-info-bar">
+        <em id="user-name"  title="点击更改账户密码">管理员</em><em class="fff">|</em><a  id="login-out" href="javascript:;">注销</a>
+        <em class="pl15" id="msg-count-wrap">
+            <i class="icon-envelope gold"></i>
+            <b class="hs-barge" id="msg-count">6</b>
+        </em>
+        <em id="more-tool" class="icon-th-list fff"></em>
+    </div>
+    <nav class="nav-wrap">
+    <!--<ul id="root-nav" class="nav">-->
+        <!--<li class="nav-first" >-->
+            <!--<a class="current" href="#" mol-id="fst" mol-direct="view/fst-page.html">首页</a>-->
+        <!--</li>-->
+        <!--<li class="nav-first">-->
+            <!--<a href="javascript:void(0);" mol-id="DataExtraction-mng" mol-direct="view/DataExtraction-mng-index.html">信息管理</a>-->
+            <!--<div class="nav-seconds">-->
+                <!--<a href="#">实施项目管理</a>-->
+                <!--<a href="#" mol-direct="view/DataExtraction-mng-xxcm.html">项目存储过程</a>-->
+                <!--<a href="#">工作存储过程</a>-->
+                <!--<a href="#">系统版本管理</a>-->
+                <!--<a href="#">系统参数管理</a>-->
+                <!--<a href="#">模块语句管理</a>-->
+                <!--<a href="#">问题共享管理</a>-->
+            <!--</div>-->
+        <!--</li>-->
+        <!--<li class="nav-first">-->
+            <!--<a href="#" mol-direct="view/prj-watch-index.html">项目监控</a>-->
+            <!--<div class="nav-seconds">-->
+                <!--<a href="#">数据实时统计</a>-->
+                <!--<a href="#">数据实时监控</a>-->
+                <!--<a href="#">应用服务监控</a>-->
+            <!--</div>-->
+        <!--</li>-->
+
+        <!--<li class="nav-first">-->
+            <!--<a href="#">二三级菜单</a>-->
+            <!--<div class="nav-seconds">-->
+
+                <!--<div class="nav-second-wrap">-->
+                    <!--<a href="#" class="nav-second-item">工作文档</a>-->
+                <!--</div>-->
+
+                <!--<div class="nav-second-wrap">-->
+                    <!--<a href="#" class="nav-second-item">存储过程</a><b>▶</b>-->
+                    <!--<div class="nav-third-wrap">-->
+                        <!--<a href="#" class="nav-third-item">项目存储</a>-->
+                        <!--<a href="#" class="nav-third-item">工作存储</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+
+                <!--<div class="nav-second-wrap">-->
+                    <!--<a href="#" class="nav-second-item">日志反馈</a>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</li>-->
+
+
+
+        <!--<li class="nav-first hidePlus">-->
+            <!--<a href="#">导航面板</a>-->
+            <!--<div class="nav-second nav-pannel">-->
+                <!--<div class="nav-third-wrap">-->
+                    <!--<div class="nav-third">-->
+                        <!--<h5><a href="#">工作日志</a></h5>-->
+                        <!--<a href="#">周报</a>-->
+                        <!--<a href="#">工作内容</a>-->
+                        <!--<a href="#">工作存储</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="nav-third-wrap">-->
+                    <!--<div class="nav-third">-->
+                        <!--<h5><a href="#">存储过程</a></h5>-->
+                        <!--<a href="#">项目存储</a>-->
+                        <!--<a href="#">工作存储</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="nav-third-wrap">-->
+                    <!--<div class="nav-third">-->
+                        <!--<h5><a href="#">过程管理</a></h5>-->
+                        <!--<a href="#">项目存储过程</a>-->
+                        <!--<a href="#">工作存储过程</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="nav-third-wrap">-->
+                    <!--<div class="nav-third">-->
+                        <!--<h5><a href="#">日志反馈</a></h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</li>-->
+        <!--<li class="nav-first hidePlus">-->
+            <!--<a href="#">导航面板2</a>-->
+            <!--<div class="nav-second nav-table">-->
+                <!--<div class="nav-table-row">-->
+                    <!--<div class="nav-third">-->
+                        <!--<h5><a href="#">工作日志</a></h5>-->
+                        <!--<a href="#">周报</a>-->
+                        <!--<a href="#">工作内容</a>-->
+                        <!--<a href="#">工作存储</a>-->
+                    <!--</div>-->
+                    <!--<div class="nav-third">-->
+                        <!--<h5><a href="#">存储过程</a></h5>-->
+                        <!--<a href="#">项目存储</a>-->
+                        <!--<a href="#">工作存储</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!--<div class="nav-table-row">-->
+                    <!--<div class="nav-third">-->
+                        <!--<h5><a href="#">过程管理</a></h5>-->
+                        <!--<a href="#">项目存储过程</a>-->
+                        <!--<a href="#">工作存储过程</a>-->
+                    <!--</div>-->
+                    <!--<div class="nav-third">-->
+                        <!--<h5><a href="#">日志反馈</a></h5>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</li>-->
+        <!--<li class="nav-first">-->
+            <!--<a href="#" mol-direct="view/feed-back-mng.html">用户反馈</a>-->
+            <!--<div class="nav-seconds">-->
+                <!--<a href="#">用户反馈管理</a>-->
+            <!--</div>-->
+        <!--</li>-->
+        <!--<li class="nav-first">-->
+            <!--<a href="#" mol-direct="view/ptcg-sys-use.html" mol-label="统计报表"><b class="large-icon hidePlus">▤</b>统计报表</a>-->
+            <!--<div class="nav-seconds">-->
+                <!--<a href="#">系统使用情况统计</a>-->
+            <!--</div>-->
+        <!--</li>-->
+        <!--<li class="nav-first bigger">-->
+            <!--<a  href="#" mol-direct="view/sys-index.html" mol-label="系统设置"><b class="icon-settings"></b></a>-->
+        <!--</li>-->
+    <!--</ul>-->
+        <ul id="root-nav" class="nav" tpsource="#nav-tp"></ul>
+        <div class="arr-l-wrap"><p class="arr-l"></p></div>
+        <div class="arr-r-wrap"><p class="arr-r"></p></div>
+    </nav>
+    </header>
+
+    <div id="root-main"></div>
+    <div id="root-tabs"  style="height:720px;width:100%;">
+        <!--<div title="应用面板" class="pd10">-->
+            <!--<p style="font-size:14px">jQuery EasyUI framework helps you build your web pages easily.</p>-->
+        <!--</div>-->
+
+        <!--<div title="当前模块:首页" no-data-options="iconCls:'icon-reload',closable:false">-->
+            <!--<iframe id="mol-content" src="view/fst-page.html" frameborder="0"></iframe>-->
+        <!--</div>-->
+
+        <div title="当前模块:首页" no-data-options="iconCls:'icon-reload',closable:false">
+            <div id="main">
+                <div id="tree-menu"></div>
+                <div id="content">
+                    <iframe id="main-frame" class="tab-content-frame" src="view/fst-page.html"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--<iframe id="content" name="content" src="view/ptcg/ptcg-sys-use.html" frameborder="0"></iframe>-->
+    <div id="root-mask" class="mask"></div>
+    <div id="top-mask" class="mask"></div>
+    <div id="left-mask" class="mask"></div>
+    <iframe src="" frameborder="0" width="0" height="0 "id="upframe" name="upframe" class="hidePlus"></iframe>
+    <div id="edit-pwd-block" class="hide">
+        <div class="btn-div">
+            <button class="ui-btn">保 存</button>
+            <button id="close-edit-pwd" class="ui-btn">关 闭</button>
+        </div>
+        <div class="edit-div">
+            <span class="red">* </span><input class="common-input mt10" type="text" placeholder="原密码">
+            <span class="red">* </span><input class="common-input mt10" type="text" placeholder="新密码">
+            <span class="red">* </span><input class="common-input mt10" type="text" placeholder="确认新密码">
+        </div>
+    </div>
+</body>
+<script type="text/template" id="tree-menu-tp">
+    <li class="grade-1" sec-count="{items.length}">
+    <a title="{name}" direct="{direct}">{name}</a>
+    <ul class="hide{items.length}">
+        {{items:#<li class="grade-2"><a class="nav-link" title="{name}" direct="{direct}">{name}</a></li>#}}
+    </ul>
+    <b  class="hide{items.length}"></b>
+</li>
+</script>
+
+<script type="text/template" id="nav-tp">
+    <li class="nav-first">
+        <a href="javascript:;" mol-id="{id}" mol-direct="{direct}">{name}</a>
+        <div class="nav-seconds hide{items.length}">
+            {{items:#nav-sec-tp}}
+        </div>
+    </li>
+</script>
+
+<script type="text/template" id="nav-sec-tp">
+    <div class="nav-second-wrap  no-items{items.length}">
+        <a class="nav-second-item" href="javascript:;" mol-id="{id}" mol-direct="{direct}">{name}</a><b class="hide{items.length}">▶</b>
+        <div class="nav-third-wrap hide{items.length}">{{items:#<a class="nav-third-item" href="javascript:;" mol-id="{id}" mol-direct="{direct}">{name}</a>#}}</div>
+    </div>
+</script>
+
+<script src="dist/js/base.js?version=1.0"></script>
+<script src="dist/js/index.js?version=1.0"></script>
+<script>
+    //注销
+    $('#login-out').on('click',function () {
+
+    });
+
+    //点击用户名 修改密码
+    $('#user-name').on('click',function () {
+        var editPwdWin = $open('#edit-pwd-block',{width:516,height:267,title:'&nbsp系统用户修改个人密码',closable:false});
+    });
+    $('#close-edit-pwd').on('click',function () {
+        $('#edit-pwd-block').window('close');
+    });
+    /*
+    $('#user-name').tooltip({
+        position: 'bottom',
+        content: '<span style="color:orange">点击更改账户密码.</span>'
+//        onShow: function(){
+//            $(this).tooltip('tip').css({
+//                backgroundColor: '#666',
+//                borderColor: '#666'
+//            });
+//        }
+    });
+    */
+//    trackMouse	boolean	如果设置为 true，提示框（tooltip）会随着鼠标移动。	false
+//    deltaX	number	提示框（tooltip）位置的水平距离。	0
+//    deltaY	number	提示框（tooltip）位置的垂直距离。	0
+//    showEvent	string	引发提示框（tooltip）出现的事件。	mouseenter
+//    hideEvent	string	引发提示框（tooltip）消失的事件。	mouseleave
+//    showDelay	number	显示提示框（tooltip）的时间延迟。	200
+//    hideDelay	number	隐藏提示框（tooltip）的时间延迟。	100
+//    事件
+//    名称	参数	描述
+//    onShow	e	当显示提示框（tooltip）时触发。
+//    onHide	e	当隐藏提示框（tooltip）时触发。
+//    onUpdate	content	当提示框（tooltip）内容更新时触发。
+//    onPosition	left,top	当提示框（tooltip）位置改变时触发。
+//    onDestroy	none	当提示框（tooltip）销毁时触发。
+//    方法
+//    名称	参数	描述
+//    options	none	返回选项（options）属性（property）。
+//    tip	none	返回提示（tip）对象。
+//    arrow	none	返回箭头（arrow）对象。
+//    show	e	显示提示框（tooltip）。
+//    hide	e	隐藏提示框（tooltip）。
+//    update	content	更新提示框（tooltip）内容。
+//    reposition	none	重置提示框（tooltip）位置。
+//    destroy	none	销毁提示框（tooltip）。
+</script>
+</html>
